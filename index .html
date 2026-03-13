@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Pro | AI Prompt Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Decorative Frame -->
+    <div class="frame-border"></div>
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration top-right"></div>
+    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-brand">
+                    <div class="brand-dot"></div>
+                    <div>
+                        <h1 class="header-title">
+                            <span class="gold">Architect</span><span class="white"> Pro</span>
+                        </h1>
+                        <p class="header-subtitle">AI Prompt Generator &bull; JSON Data Creator</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button onclick="switchTab('import')" class="nav-link">Importar JSON</button>
+                    <select id="templateSelector" onchange="loadTemplate()" class="template-select">
+                        <option value="hero">Hero Product</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="arquitectura">Arquitectura</option>
+                        <option value="ui_ux">UI/UX Design</option>
+                        <option value="vfx">VFX / Environments</option>
+                        <option value="arte">Arte / Ilustración</option>
+                        <option value="empty">Vacío</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Left Column - Editor -->
+                <div class="space-y-4">
+                    <!-- Clean Prompt Output -->
+                    <div class="glass-card output-section">
+                        <div class="section-header">
+                            <label class="section-label">Prompt Final (Limpio)</label>
+                            <button onclick="copyCleanPrompt()" class="btn-copy">Copiar</button>
+                        </div>
+                        <p id="textPreview" class="output-text"></p>
+                    </div>
+
+                    <!-- Negative Prompt -->
+                    <div class="glass-card negative-section">
+                        <label class="section-label">Negative Prompt</label>
+                        <input type="text" id="negativePrompt" oninput="updateJSON()" 
+                            value="low quality, blurry, distorted, low resolution, watermark, text" 
+                            class="input-field" style="margin-top: 12px;">
+                    </div>
+
+                    <!-- Dynamic Fields -->
+                    <div id="fieldsContainer" class="fields-container"></div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button onclick="addField()" class="btn-add">+ Añadir Atributo</button>
+                        <button onclick="downloadJSON()" class="btn-export">Exportar JSON</button>
+                    </div>
+
+                    <!-- Import Section -->
+                    <div id="importSection" class="glass-card import-section">
+                        <label class="section-label" style="margin-bottom: 12px; display: block;">Importar JSON</label>
+                        <textarea id="importArea" class="input-field import-textarea" placeholder="Pega el JSON aquí..."></textarea>
+                        <div class="import-actions">
+                            <button onclick="importJSON()" class="btn-process">Procesar</button>
+                            <button onclick="switchTab('editor')" class="btn-close">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Preview & Library -->
+                <div class="right-panel">
+                    <!-- JSON Preview -->
+                    <div class="glass-card json-preview-card">
+                        <div class="section-header">
+                            <h2 class="section-label">System Output (JSON)</h2>
+                            <button onclick="copyToClipboard()" class="btn-copy">Copiar JSON</button>
+                        </div>
+                        <pre id="jsonPreview" class="json-output"></pre>
+                    </div>
+
+                    <!-- Library Section -->
+                    <div class="library-container">
+                        <h3 class="library-header">Biblioteca de Consulta</h3>
+
+                        <!-- Camera Angles -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>1. Cámara (Ángulos y Movimiento)</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Eye-Level:</b> Perspectiva neutral y natural.</div>
+                                <div class="cheat-item"><b>Low Angle:</b> Cámara desde abajo para dar poder.</div>
+                                <div class="cheat-item"><b>High Angle:</b> Cámara desde arriba para empequeñecer al sujeto.</div>
+                                <div class="cheat-item"><b>Worm's Eye:</b> Ángulo extremo desde el suelo.</div>
+                                <div class="cheat-item"><b>Bird's Eye:</b> Vista cenital completa (90 grados abajo).</div>
+                                <div class="cheat-item"><b>Dutch Angle:</b> Cámara inclinada para generar tensión.</div>
+                                <div class="cheat-item"><b>POV:</b> Primera persona total.</div>
+                                <div class="cheat-item"><b>Ground-level:</b> A ras de suelo (texturas/calzado).</div>
+                                <div class="cheat-item"><b>Close-up:</b> Primer plano detallado.</div>
+                                <div class="cheat-item"><b>Full Body:</b> Captura al sujeto de pies a cabeza.</div>
+                            </div>
+                        </details>
+
+                        <!-- Lenses -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>2. Lentes (Óptica y Efectos)</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>35mm Lens:</b> Estándar para fotografía de calle.</div>
+                                <div class="cheat-item"><b>50mm:</b> Retrato natural (ojo humano).</div>
+                                <div class="cheat-item"><b>85mm Prime:</b> Rey de retratos con fondo desenfocado.</div>
+                                <div class="cheat-item"><b>Macro 100mm:</b> Detalles microscópicos.</div>
+                                <div class="cheat-item"><b>Fish-eye:</b> Efecto de burbuja distorsionado.</div>
+                                <div class="cheat-item"><b>Tilt-shift:</b> Ciudades estilo maqueta de juguete.</div>
+                                <div class="cheat-item"><b>Anamorphic:</b> Look cinematográfico con destellos.</div>
+                                <div class="cheat-item"><b>Bokeh:</b> Luces de fondo borrosas y circulares.</div>
+                                <div class="cheat-item"><b>Shallow Depth:</b> Solo el sujeto está enfocado.</div>
+                            </div>
+                        </details>
+
+                        <!-- Composition -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>3. Composición</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Rule of Thirds:</b> Sujeto en intersecciones de cuadrícula.</div>
+                                <div class="cheat-item"><b>Symmetry:</b> Equilibrio perfecto izquierda-derecha.</div>
+                                <div class="cheat-item"><b>Leading Lines:</b> Líneas que guían hacia el sujeto.</div>
+                                <div class="cheat-item"><b>Golden Ratio:</b> Espiral de proporción áurea.</div>
+                                <div class="cheat-item"><b>Negative Space:</b> Mucho aire alrededor del sujeto.</div>
+                                <div class="cheat-item"><b>Minimalist:</b> Pocos elementos, enfoque absoluto.</div>
+                                <div class="cheat-item"><b>Flat Lay:</b> Visto desde arriba sobre mesa plana.</div>
+                                <div class="cheat-item"><b>Layered:</b> Profundidad (frente, medio, fondo).</div>
+                            </div>
+                        </details>
+
+                        <!-- Iluminación -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>4. Iluminación</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Golden Hour:</b> Luz cálida de atardecer.</div>
+                                <div class="cheat-item"><b>Rembrandt:</b> Triángulo de luz en la mejilla.</div>
+                                <div class="cheat-item"><b>Volumetric:</b> Rayos de luz visibles (Dios).</div>
+                                <div class="cheat-item"><b>Cinematic:</b> Contraste alto, look Hollywood.</div>
+                                <div class="cheat-item"><b>Rim Lighting:</b> Luz trasera que dibuja el contorno.</div>
+                                <div class="cheat-item"><b>Cyberpunk:</b> Mezcla de azul cian y magenta.</div>
+                                <div class="cheat-item"><b>High Key:</b> Muy claro, casi blanco, sin sombras.</div>
+                            </div>
+                        </details>
+
+                        <!-- Estilos de Fotografía -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>5. Estilos de Fotografía</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Editorial Fashion:</b> Estilo revista Vogue.</div>
+                                <div class="cheat-item"><b>Paparazzi Style:</b> Flash directo, look robado.</div>
+                                <div class="cheat-item"><b>Analog / Film:</b> Look película antigua 35mm.</div>
+                                <div class="cheat-item"><b>Long Exposure:</b> Agua como seda, luces estiradas.</div>
+                                <div class="cheat-item"><b>Infrared:</b> Vegetación blanca y cielos negros.</div>
+                                <div class="cheat-item"><b>Noir:</b> Sombras profundas, estilo detectives.</div>
+                            </div>
+                        </details>
+
+                        <!-- Estilos de Ilustración -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>6. Estilos de Ilustración</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Ukiyo-e:</b> Grabado japonés clásico.</div>
+                                <div class="cheat-item"><b>Cell Shaded:</b> Estilo anime o cómic (bordes).</div>
+                                <div class="cheat-item"><b>Oil Painting:</b> Óleo sobre lienzo con pinceladas.</div>
+                                <div class="cheat-item"><b>Low Poly:</b> Figuras geométricas pocos polígonos.</div>
+                                <div class="cheat-item"><b>3D Pixar:</b> Personajes amigables, texturas suaves.</div>
+                                <div class="cheat-item"><b>Watercolor:</b> Acuarela y manchas de agua.</div>
+                            </div>
+                        </details>
+
+                        <!-- UX / UI Design -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>7. UX / UI Design</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>Glassmorphism:</b> Cristal esmerilado.</div>
+                                <div class="cheat-item"><b>Neumorphism:</b> Esculpido en el fondo.</div>
+                                <div class="cheat-item"><b>Bento Box:</b> Celdas rectangulares (Estilo Apple).</div>
+                                <div class="cheat-item"><b>Claymorphism:</b> Hecho de plastilina 3D.</div>
+                                <div class="cheat-item"><b>Skeuomorphism:</b> Imitación de texturas reales.</div>
+                                <div class="cheat-item"><b>Brutalist UI:</b> Tipografía enorme y crudo.</div>
+                            </div>
+                        </details>
+
+                        <!-- Aspect Ratios -->
+                        <details class="cheat-card">
+                            <summary>
+                                <span>8. Aspect Ratios</span>
+                                <span class="arrow">▼</span>
+                            </summary>
+                            <div class="cheat-content">
+                                <div class="cheat-item"><b>1:1</b> Cuadrado. Instagram, avatares, iconos.</div>
+                                <div class="cheat-item"><b>4:3</b> Clásico. Fotografía tradicional, presentaciones.</div>
+                                <div class="cheat-item"><b>3:2</b> Cámara DSLR. Fotografía profesional estándar.</div>
+                                <div class="cheat-item"><b>16:9</b> Widescreen. YouTube, cine digital, monitores.</div>
+                                <div class="cheat-item"><b>21:9</b> Ultrawide. Cine épico, banners web.</div>
+                                <div class="cheat-item"><b>9:16</b> Vertical. Stories, Reels, TikTok, móvil.</div>
+                                <div class="cheat-item"><b>2:3</b> Vertical clásico. Pinterest, posters, retratos.</div>
+                                <div class="cheat-item"><b>4:5</b> Vertical Instagram. Posts de feed optimizados.</div>
+                                <div class="cheat-item"><b>3:4</b> Vertical tablet. iPad, presentaciones verticales.</div>
+                                <div class="cheat-item"><b>2.39:1</b> Cinemascope. Películas épicas, anamórfico.</div>
+                                <div class="cheat-item"><b>1.85:1</b> Theatrical. Cine americano estándar.</div>
+                                <div class="cheat-item"><b>5:4</b> Casi cuadrado. Monitores antiguos, imprenta.</div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
