@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description" content="AI Prompt Generator - Create and manage prompts for image generation">
     <title>Architect Pro | AI Prompt Generator</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ff3b5c'/%3E%3Cstop offset='100%25' stop-color='%23dc2645'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Cpath d='M50 20L70 70H30L50 20Z' fill='white' opacity='0.9'/%3E%3Ccircle cx='50' cy='55' r='8' fill='white'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,7 +23,20 @@
             <!-- Header -->
             <header class="header">
                 <div class="header-brand">
-                    <div class="brand-dot"></div>
+                    <div class="brand-icon">
+                        <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ff3b5c"/>
+                                    <stop offset="100%" stop-color="#dc2645"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#brandGrad)" opacity="0.15"/>
+                            <circle cx="50" cy="50" r="35" stroke="url(#brandGrad)" stroke-width="2" fill="none"/>
+                            <path d="M50 25L65 60H35L50 25Z" fill="url(#brandGrad)"/>
+                            <circle cx="50" cy="52" r="6" fill="url(#brandGrad)"/>
+                        </svg>
+                    </div>
                     <div>
                         <h1 class="header-title">
                             <span class="gold">Architect</span><span class="white"> Pro</span>
@@ -90,7 +107,7 @@
                             <h2 class="section-label">System Output (JSON)</h2>
                             <button onclick="copyToClipboard()" class="btn-copy">Copiar JSON</button>
                         </div>
-                        <pre id="jsonPreview" class="json-output"></pre>
+                        <textarea id="jsonPreview" class="json-textarea" oninput="syncFromJSON()"></textarea>
                     </div>
 
                     <!-- Library Section -->
