@@ -182,14 +182,14 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
     filter: drop-shadow(0 0 15px var(--glow-crimson));
 }
 
 .robot-icon {
-    width: 100%;
-    height: 100%;
+    width: 50%;
+    height: 50%;
     object-fit: contain;
 }
 
