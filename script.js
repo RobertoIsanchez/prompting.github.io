@@ -76,7 +76,7 @@ function createFieldRow(key = "", value = "", placeholder = "Valor...") {
     const row = document.createElement('div');
     row.className = "field-row";
     row.draggable = true;
-    
+
     row.innerHTML = `
         <button class="btn-drag" title="Arrastrar para reordenar">
             <i data-lucide="grip-vertical"></i>
@@ -113,9 +113,9 @@ function addField(key = "", value = "", placeholder = "Valor...") {
     container.appendChild(row);
     lucide.createIcons({ root: row });
     updateJSON();
-    
+
     // Auto focus if added empty
-    if(key === "") {
+    if (key === "") {
         setTimeout(() => row.querySelector('.key-input').focus(), 50);
     }
 }
@@ -133,10 +133,10 @@ function handleDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     const target = e.target.closest('.field-row');
-    if(target && target !== draggedItem) {
+    if (target && target !== draggedItem) {
         const bounding = target.getBoundingClientRect();
         const offset = bounding.y + (bounding.height / 2);
-        if(e.clientY - offset > 0) {
+        if (e.clientY - offset > 0) {
             target.style.borderBottom = "2px solid var(--brand-rose)";
             target.style.borderTop = "";
         } else {
@@ -149,22 +149,22 @@ function handleDragOver(e) {
 function handleDrop(e) {
     e.preventDefault();
     const target = e.target.closest('.field-row');
-    if(target && target !== draggedItem) {
+    if (target && target !== draggedItem) {
         const bounding = target.getBoundingClientRect();
         const offset = bounding.y + (bounding.height / 2);
-        if(e.clientY - offset > 0) {
+        if (e.clientY - offset > 0) {
             target.parentNode.insertBefore(draggedItem, target.nextSibling);
         } else {
             target.parentNode.insertBefore(draggedItem, target);
         }
     }
-    
+
     // Reset borders
     container.querySelectorAll('.field-row').forEach(row => {
         row.style.borderTop = "";
         row.style.borderBottom = "";
     });
-    
+
     updateJSON();
 }
 
@@ -195,34 +195,34 @@ function loadTemplate() {
  */
 function updateJSON() {
     if (isSyncing) return;
-    
+
     const result = {
         prompt_structure: {}
     };
-    
+
     // Use an object to avoid duplicate keys logic cleanly if needed, but array preserves order via DOM
     let promptParts = [];
-    
-    if(negativeInput.value.trim() !== '') {
+
+    if (negativeInput.value.trim() !== '') {
         result.prompt_structure.negative_prompt = negativeInput.value;
     }
 
     document.querySelectorAll('.field-row').forEach((row, index) => {
         const keyInput = row.querySelector('.key-input');
         const valueInput = row.querySelector('.value-input');
-        
+
         let k = keyInput.value.trim();
         // Convert to valid JSON key format (no spaces) if desired, but arbitrary strings are valid JSON keys.
         k = k || `extra_${index}`;
-        
+
         let v = valueInput.value;
-        
+
         // Try parsing arrays/objects loosely
         try {
             if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) {
                 v = JSON.parse(v);
             }
-        } catch (e) {}
+        } catch (e) { }
 
         result.prompt_structure[k] = v;
 
@@ -234,7 +234,7 @@ function updateJSON() {
     });
 
     preview.value = JSON.stringify(result, null, 4);
-    
+
     let finalText = promptParts.join(", ");
     if (negativeInput.value.trim() !== '') {
         finalText += " --no " + negativeInput.value.trim();
@@ -244,31 +244,31 @@ function updateJSON() {
 
 function syncFromJSON() {
     if (isSyncing) return;
-    
+
     try {
         const data = JSON.parse(preview.value);
         const structure = data.prompt_structure || data;
-        
+
         isSyncing = true;
-        
+
         if (structure.negative_prompt !== undefined) {
             negativeInput.value = structure.negative_prompt;
         } else {
             negativeInput.value = "";
         }
-        
+
         const keys = Object.keys(structure).filter(k => k !== 'negative_prompt' && k !== 'metadata');
         const currentRows = container.querySelectorAll('.field-row');
-        
+
         // Match lengths
-        while(currentRows.length > keys.length) {
+        while (currentRows.length > keys.length) {
             container.lastChild.remove();
         }
-        
+
         keys.forEach((key, index) => {
             let val = structure[key];
             const displayValue = typeof val === 'object' ? JSON.stringify(val) : val;
-            
+
             const existingRow = container.querySelectorAll('.field-row')[index];
             if (existingRow) {
                 existingRow.querySelector('.key-input').value = key;
@@ -279,21 +279,21 @@ function syncFromJSON() {
                 lucide.createIcons({ root: row });
             }
         });
-        
+
         // Update Clean Text
         let promptParts = keys.map(k => {
             let v = structure[k];
             return typeof v === 'object' ? JSON.stringify(v).replace(/[{} "[\]]/g, '') : v;
         }).filter(v => v !== "");
-        
+
         let finalText = promptParts.join(", ");
         if (negativeInput.value.trim() !== '') {
             finalText += " --no " + negativeInput.value.trim();
         }
         textPreview.textContent = finalText;
-        
+
         isSyncing = false;
-        
+
     } catch (e) {
         // Just fail silently while typing invalid JSON
         isSyncing = false;
@@ -308,13 +308,13 @@ function importJSON() {
         const data = JSON.parse(importArea.value);
         const structure = data.prompt_structure || data;
         container.innerHTML = "";
-        
+
         if (structure.negative_prompt) {
             negativeInput.value = structure.negative_prompt;
         } else {
             negativeInput.value = "";
         }
-        
+
         for (const key in structure) {
             if (key !== 'negative_prompt' && key !== 'metadata') {
                 let val = structure[key];
@@ -430,7 +430,7 @@ function copyAiPrompt() {
 
 function copyCleanPrompt() {
     const text = textPreview.textContent.trim();
-    if(!text) return showToast("No hay prompt para copiar", "alert-triangle");
+    if (!text) return showToast("No hay prompt para copiar", "alert-triangle");
     navigator.clipboard.writeText(text);
     showToast("Prompt copiado al portapapeles", "copy-check");
 }
@@ -458,7 +458,7 @@ const cards = document.querySelectorAll('.bento-card');
 function showCategory(index) {
     if (cards.length === 0) return;
     cards.forEach(card => card.classList.remove('active'));
-    
+
     if (index >= cards.length) {
         currentCategoryIndex = 0;
     } else if (index < 0) {
@@ -466,15 +466,15 @@ function showCategory(index) {
     } else {
         currentCategoryIndex = index;
     }
-    
+
     cards[currentCategoryIndex].classList.add('active');
 }
 
-window.prevCategory = function() {
+window.prevCategory = function () {
     showCategory(currentCategoryIndex - 1);
 };
 
-window.nextCategory = function() {
+window.nextCategory = function () {
     showCategory(currentCategoryIndex + 1);
 };
 
@@ -482,14 +482,14 @@ document.querySelectorAll('.bento-tags .tag').forEach(tag => {
     tag.addEventListener('click', (e) => {
         let val = e.target.getAttribute('data-val') || e.target.textContent;
         let categoryElement = e.target.closest('.bento-card').getAttribute('data-category');
-        
+
         // formatting the target key nicely
         let keyFormatted = categoryElement.toLowerCase().replace(/\s+/g, '_');
-        if(keyFormatted === "aspect_ratio") keyFormatted = "ar";
-        
+        if (keyFormatted === "aspect_ratio") keyFormatted = "ar";
+
         addField(keyFormatted, val);
         showToast(`"${val}" añadido`, "plus-circle");
-        
+
         // Scroll editor to bottom smoothly
         container.scrollTo({
             top: container.scrollHeight,
@@ -506,7 +506,7 @@ function showToast(message, iconName = "info") {
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerHTML = `<i data-lucide="${iconName}"></i> <span>${message}</span>`;
-    
+
     toaster.appendChild(toast);
     lucide.createIcons({ root: toast });
 
