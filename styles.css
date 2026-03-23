@@ -182,8 +182,9 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 65px;
-    height: 65px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
     filter: drop-shadow(0 0 15px var(--glow-crimson));
 }
 
@@ -191,6 +192,7 @@ body::before {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    display: block;
 }
 
 .header-title {
