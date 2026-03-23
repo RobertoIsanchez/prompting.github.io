@@ -653,9 +653,9 @@ button {
 }
 
 .nav-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    border-radius: 50%;
     color: var(--text-muted);
     width: 28px;
     height: 28px;
@@ -667,9 +667,8 @@ button {
 }
 
 .nav-btn:hover {
-    background: rgba(255, 59, 92, 0.15);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--brand-rose);
-    border-color: var(--border-accent);
 }
 
 .nav-btn i {

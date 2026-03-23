@@ -19,8 +19,8 @@
     <svg width="0" height="0" style="position:absolute; width: 0; height: 0;">
         <defs>
             <linearGradient id="brandGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
-                <stop offset="0%" stop-color="#ff3b5c"/>
-                <stop offset="100%" stop-color="#ff6b35"/>
+                <stop offset="0%" stop-color="#ff3b5c" />
+                <stop offset="100%" stop-color="#ff6b35" />
             </linearGradient>
         </defs>
     </svg>
@@ -32,7 +32,8 @@
         <header class="header glass-panel">
             <div class="header-brand">
                 <div class="brand-logomark">
-                    <img src="logo.png" alt="Logo" style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px;">
+                    <img src="oni_mask_logo.png" alt="Logo"
+                        style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px;">
                 </div>
                 <div>
                     <h1 class="header-title">JSON <span class="text-gradient"> Prompting</span></h1>
@@ -43,8 +44,10 @@
             <div class="header-actions">
                 <!-- JSON Templates -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Template de Creación:</span>
-                    <div class="select-wrapper" title="Elige un template base para pre-llenar los atributos e inicar tu Prompt JSON">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Template de
+                        Creación:</span>
+                    <div class="select-wrapper"
+                        title="Elige un template base para pre-llenar los atributos e inicar tu Prompt JSON">
                         <i data-lucide="layout-template" class="select-icon"></i>
                         <select id="templateSelector" onchange="loadTemplate()" class="template-select">
                             <option value="hero">Hero Product</option>
@@ -62,22 +65,37 @@
 
                 <!-- AI Analysis Templates -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Template de Análisis:</span>
-                    <div style="display: flex; gap: 4px; align-items: center;" title="Plantillas optimizadas para extraer datos visuales de una imagen usando IA">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Template de
+                        Análisis:</span>
+                    <div style="display: flex; gap: 4px; align-items: center;"
+                        title="Plantillas optimizadas para extraer datos visuales de una imagen usando IA">
                         <div class="select-wrapper">
                             <i data-lucide="bot" class="select-icon"></i>
                             <select id="aiPromptSelector" class="template-select" style="max-width: 180px;">
-                                <option value="general" title="Prompt general para extraer elementos y describirlos">Prompt General</option>
-                                <option value="interior" title="Aísla objetos individuales y ubicación de la luz detallando color y material">Diseño de Interiores</option>
-                                <option value="layout" title="Extrae datos espaciales y de distribución enfocándose en el acomodo de muebles">Distribución / Layout</option>
-                                <option value="object" title="Extrae especificaciones exactas de diseño para integrarlo en otra escena">Objeto / Solo</option>
-                                <option value="atmosphere" title="Propiedades físicas, fuente de luz, clima e intensidad de sombras">Atmósfera y Luz</option>
-                                <option value="camera" title="Configuración de cámara puramente geométrica, lentes y perspectiva neutral">Cámara / Composición</option>
-                                <option value="branding" title="Contenido exacto de texto, estilo de fuentes y logos">Tipografía / Branding</option>
+                                <option value="general" title="Prompt general para extraer elementos y describirlos">
+                                    Prompt General</option>
+                                <option value="interior"
+                                    title="Aísla objetos individuales y ubicación de la luz detallando color y material">
+                                    Diseño de Interiores</option>
+                                <option value="layout"
+                                    title="Extrae datos espaciales y de distribución enfocándose en el acomodo de muebles">
+                                    Distribución / Layout</option>
+                                <option value="object"
+                                    title="Extrae especificaciones exactas de diseño para integrarlo en otra escena">
+                                    Objeto / Solo</option>
+                                <option value="atmosphere"
+                                    title="Propiedades físicas, fuente de luz, clima e intensidad de sombras">Atmósfera
+                                    y Luz</option>
+                                <option value="camera"
+                                    title="Configuración de cámara puramente geométrica, lentes y perspectiva neutral">
+                                    Cámara / Composición</option>
+                                <option value="branding" title="Contenido exacto de texto, estilo de fuentes y logos">
+                                    Tipografía / Branding</option>
                             </select>
                         </div>
-                        <button onclick="copyAiPrompt()" class="btn-ghost btn-icon" title="Copiar el prompt seleccionado a tu portapapeles">
-                            <i data-lucide="copy"></i>
+                        <button onclick="copyAiPrompt()" class="btn-ghost btn-icon"
+                            title="Copiar el prompt seleccionado a tu portapapeles">
+                            <i data-lucide="copy" class="icon-gradient"></i>
                         </button>
                     </div>
                 </div>
@@ -100,7 +118,8 @@
                 <div class="glass-panel output-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <i data-lucide="terminal-square" class="icon-gradient"></i> <span class="text-gradient">Output Prompt</span>
+                            <i data-lucide="terminal-square" class="icon-gradient"></i> <span
+                                class="text-gradient">Output Prompt</span>
                         </div>
                         <button onclick="copyCleanPrompt()" class="btn-primary btn-sm">
                             <i data-lucide="copy"></i> Copiar
@@ -115,7 +134,8 @@
                 <div class="glass-panel studio-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <i data-lucide="sliders-horizontal" class="icon-gradient"></i> <span class="text-gradient">Atributos Base</span>
+                            <i data-lucide="sliders-horizontal" class="icon-gradient"></i> <span
+                                class="text-gradient">Atributos Base</span>
                         </div>
                         <button onclick="addField()" class="btn-primary btn-sm">
                             <i data-lucide="plus"></i> Añadir
@@ -128,7 +148,8 @@
                 <div class="glass-panel negative-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <i data-lucide="octagon-alert" class="icon-gradient"></i> <span class="text-gradient">Negative Prompt</span>
+                            <i data-lucide="octagon-alert" class="icon-gradient"></i> <span
+                                class="text-gradient">Negative Prompt</span>
                         </div>
                     </div>
                     <input type="text" id="negativePrompt" oninput="updateJSON()"
@@ -150,7 +171,7 @@
                             <i data-lucide="file-json"></i> Importar JSON
                         </div>
                         <button onclick="switchTab('editor')" class="btn-ghost btn-sm btn-icon">
-                            <i data-lucide="x"></i>
+                            <i data-lucide="x" class="icon-gradient"></i>
                         </button>
                     </div>
                     <textarea id="importArea" class="input-field textarea-code"
@@ -168,10 +189,11 @@
                 <div class="glass-panel json-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <i data-lucide="braces" class="icon-gradient"></i> <span class="text-gradient">System JSON</span>
+                            <i data-lucide="braces" class="icon-gradient"></i> <span class="text-gradient">System
+                                JSON</span>
                         </div>
                         <button onclick="copyToClipboard()" class="btn-ghost btn-sm btn-icon" title="Copiar JSON">
-                            <i data-lucide="copy"></i>
+                            <i data-lucide="copy" class="icon-gradient"></i>
                         </button>
                     </div>
                     <div class="json-container">
@@ -184,11 +206,14 @@
                 <div class="glass-panel library-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <i data-lucide="library" class="icon-gradient"></i> <span class="text-gradient">Biblioteca Creativa</span>
+                            <i data-lucide="library" class="icon-gradient"></i> <span class="text-gradient">Biblioteca
+                                Creativa</span>
                         </div>
                         <div class="carousel-nav">
-                            <button onclick="prevCategory()" class="nav-btn"><i data-lucide="chevron-left"></i></button>
-                            <button onclick="nextCategory()" class="nav-btn"><i data-lucide="chevron-right"></i></button>
+                            <button onclick="prevCategory()" class="nav-btn"><i data-lucide="chevron-left"
+                                    class="icon-gradient"></i></button>
+                            <button onclick="nextCategory()" class="nav-btn"><i data-lucide="chevron-right"
+                                    class="icon-gradient"></i></button>
                         </div>
                     </div>
                     <div class="bento-grid">
