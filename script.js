@@ -422,6 +422,7 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
 };
 
 function copyAiPrompt() {
+    triggerPulse(event.currentTarget.querySelector('i'));
     const selector = document.getElementById('aiPromptSelector');
     const promptText = aiPromptsData[selector ? selector.value : 'general'];
     navigator.clipboard.writeText(promptText);
@@ -429,6 +430,7 @@ function copyAiPrompt() {
 }
 
 function copyCleanPrompt() {
+    triggerPulse(event.currentTarget.querySelector('i'));
     const text = textPreview.textContent.trim();
     if (!text) return showToast("No hay prompt para copiar", "alert-triangle");
     navigator.clipboard.writeText(text);
@@ -436,8 +438,15 @@ function copyCleanPrompt() {
 }
 
 function copyToClipboard() {
+    triggerPulse(event.currentTarget.querySelector('i'));
     navigator.clipboard.writeText(preview.value);
     showToast("JSON copiado al portapapeles", "copy-check");
+}
+
+function triggerPulse(el) {
+    if (!el) return;
+    el.classList.add('pulse-animation');
+    setTimeout(() => el.classList.remove('pulse-animation'), 600);
 }
 
 function downloadJSON() {

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 /* CSS Variables - OLED Premium Palette */
 :root {
     --bg-base: #030305;
@@ -32,6 +30,8 @@
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -49,7 +49,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Background Effects */
+/* Background Effects - Dynamic Mesh */
 body::before {
     content: '';
     position: fixed;
@@ -57,49 +57,45 @@ body::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-    background-size: 40px 40px;
+    background: 
+        radial-gradient(circle at 0% 0%, var(--glow-crimson) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, var(--glow-gold) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(3, 3, 5, 0.8) 0%, var(--bg-base) 100%);
     z-index: -2;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
-    -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
 .glow-orb {
     position: fixed;
     border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.15;
+    filter: blur(140px);
+    opacity: 0.12;
     z-index: -1;
-    animation: float 20s infinite alternate ease-in-out;
+    mix-blend-mode: screen;
+    animation: mesh-float 25s infinite alternate ease-in-out;
 }
 
 .orb-1 {
-    top: -10%;
+    top: -20%;
     left: -10%;
-    width: 600px;
-    height: 600px;
-    background: var(--brand-crimson);
+    width: 800px;
+    height: 800px;
+    background: conic-gradient(from 180deg at 50% 50%, var(--brand-crimson), var(--brand-orange), var(--brand-crimson));
 }
 
 .orb-2 {
-    bottom: -10%;
+    bottom: -20%;
     right: -10%;
-    width: 500px;
-    height: 500px;
-    background: var(--brand-orange);
-    animation-delay: -10s;
+    width: 700px;
+    height: 700px;
+    background: conic-gradient(from 0deg at 50% 50%, var(--brand-orange), var(--brand-gold), var(--brand-orange));
+    animation-delay: -12s;
 }
 
-@keyframes float {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-
-    100% {
-        transform: translate(100px, 50px) scale(1.2);
-    }
+@keyframes mesh-float {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    33% { transform: translate(50px, 100px) rotate(10deg) scale(1.1); }
+    66% { transform: translate(-50px, 50px) rotate(-10deg) scale(0.9); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
 }
 
 /* Layout */
@@ -109,14 +105,26 @@ body::before {
     padding: 24px 32px;
 }
 
-/* Glass Panels */
+/* Glass Panels - Refined */
 .glass-panel {
     background: var(--bg-panel);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--border-light);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     transition: var(--transition);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: panel-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes panel-entrance {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.glass-panel:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: var(--bg-panel-hover);
 }
 
 /* Header */
@@ -136,10 +144,28 @@ body::before {
 }
 
 .brand-logomark {
+    display: none;
+}
+
+@keyframes robot-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.header-robot {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(0 0 12px var(--glow-crimson));
+    width: 64px;
+    height: 64px;
+    filter: drop-shadow(0 0 15px var(--glow-crimson));
+}
+
+.robot-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .header-title {
@@ -155,14 +181,21 @@ body::before {
     background-clip: text;
 }
 
+@keyframes holo-shimmer {
+    to { background-position: 200% center; }
+}
+
 .icon-gradient {
     stroke: url(#brandGrad) !important;
 }
 
 .header-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: -4px;
 }
 
 .header-actions {
@@ -194,13 +227,13 @@ button {
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--glow-crimson);
-    filter: brightness(1.1);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px var(--glow-crimson);
+    filter: brightness(1.2);
 }
 
 .btn-primary:active {
-    transform: translateY(0);
+    transform: translateY(-1px) scale(0.98);
 }
 
 .btn-outline {
@@ -300,7 +333,7 @@ button {
 .workspace-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 28px;
 }
 
 @media (min-width: 1024px) {
@@ -793,4 +826,27 @@ button {
 
 .field-row {
     animation: rowSpawn 0.3s ease-out;
+}
+
+/* Interactive Feedback */
+.pulse-animation {
+    animation: pulse-ring 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.4); filter: brightness(2); shadow: 0 0 15px var(--brand-rose); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.tag:hover {
+    color: var(--text-main);
+    border-color: var(--brand-crimson);
+    background: rgba(255, 59, 92, 0.1);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 59, 92, 0.2);
+}
+
+.tag:active {
+    transform: scale(0.95);
 }
