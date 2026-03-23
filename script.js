@@ -1,7 +1,5 @@
-/* ========================================
-   ARCHITECT PRO - Premium AI Theme
-   JavaScript Logic
-   ======================================== */
+// Initialize Lucide Icons
+lucide.createIcons();
 
 // DOM Elements
 const container = document.getElementById('fieldsContainer');
@@ -15,14 +13,14 @@ const importSection = document.getElementById('importSection');
 // Templates Data
 const templates = {
     hero: [
-        { k: "objeto", v: "Lata de refresco premium", p: "Sujeto principal" },
-        { k: "materiales", v: "Aluminio cepillado, gotas de agua", p: "Texturas PBR" },
-        { k: "iluminacion", v: "Studio lighting, 3 puntos de luz", p: "Esquema de luz" },
+        { k: "sujeto", v: "Lata de refresco premium", p: "Sujeto principal" },
+        { k: "materiales", v: "Aluminio cepillado, gotas de agua", p: "Texturas" },
+        { k: "iluminacion", v: "Studio lighting, 3 puntos de luz", p: "Luz" },
         { k: "ambiente", v: "Fondo minimalista oscuro", p: "Escenario" },
-        { k: "camara", v: "85mm macro, ángulo de nivel", p: "Lente y encuadre" }
+        { k: "camara", v: "85mm macro, ángulo de nivel", p: "Lente" }
     ],
     lifestyle: [
-        { k: "persona", v: "Mujer joven, estilo casual", p: "Sujeto / Modelo" },
+        { k: "persona", v: "Mujer joven, estilo casual", p: "Sujeto" },
         { k: "etnia", v: "Rasgos latinos", p: "Apariencia" },
         { k: "vestimenta", v: "Chaqueta de lino blanca", p: "Outfit" },
         { k: "entorno", v: "Cafetería moderna con plantas", p: "Location" },
@@ -38,13 +36,13 @@ const templates = {
         { k: "plataforma", v: "App móvil de Finanzas", p: "Dispositivo" },
         { k: "estilo_visual", v: "Glassmorphism moderno", p: "Tendencia" },
         { k: "paleta", v: "Deep blue, cyan accents", p: "Colores" },
-        { k: "componentes", v: "Bento grid system", p: "Layout" }
+        { k: "layout", v: "Bento grid system", p: "Layout" }
     ],
     vfx: [
         { k: "mundo", v: "Ciudadela en ruinas", p: "Escenario" },
         { k: "atmosfera", v: "Tormenta de arena", p: "Ambiente" },
         { k: "vfx", v: "Luz volumétrica", p: "Efectos" },
-        { k: "motor", v: "Unreal Engine 5.4", p: "Render Tech" }
+        { k: "motor", v: "Unreal Engine 5", p: "Render Tech" }
     ],
     arte: [
         { k: "tecnica", v: "Óleo sobre lienzo", p: "Medio" },
@@ -55,121 +53,195 @@ const templates = {
     empty: []
 };
 
+// State flag
+let isSyncing = false;
+let draggedItem = null;
+
 /**
- * Switch between editor and import views
+ * UI Controls
  */
 function switchTab(view) {
     if (view === 'import') {
         importSection.classList.add('active');
+        importArea.focus();
     } else {
         importSection.classList.remove('active');
     }
 }
 
 /**
- * Add a new field row to the form
+ * Fields Management
  */
-function addField(key = "", value = "", placeholder = "Valor...") {
-    const fieldDiv = document.createElement('div');
-    fieldDiv.className = "field-row";
-    fieldDiv.innerHTML = `
-        <div class="field-actions">
-            <button onclick="moveField(this.closest('.field-row'), 'up')" class="btn-move btn-move-up" aria-label="Mover arriba">▲</button>
-            <button onclick="moveField(this.closest('.field-row'), 'down')" class="btn-move btn-move-down" aria-label="Mover abajo">▼</button>
-        </div>
+function createFieldRow(key = "", value = "", placeholder = "Valor...") {
+    const row = document.createElement('div');
+    row.className = "field-row";
+    row.draggable = true;
+    
+    row.innerHTML = `
+        <button class="btn-drag" title="Arrastrar para reordenar">
+            <i data-lucide="grip-vertical"></i>
+        </button>
         <input type="text" placeholder="Categoría" value="${key}" class="input-field field-key key-input">
         <input type="text" placeholder="${placeholder}" value='${value}' class="input-field field-value value-input">
-        <button onclick="this.parentElement.remove(); updateJSON();" class="btn-remove" aria-label="Eliminar campo">&times;</button>
+        <button class="btn-remove" title="Eliminar">
+            <i data-lucide="trash-2"></i>
+        </button>
     `;
-    container.appendChild(fieldDiv);
-    fieldDiv.querySelectorAll('input').forEach(input => input.addEventListener('input', updateJSON));
+
+    // Attach drag events
+    row.addEventListener('dragstart', handleDragStart);
+    row.addEventListener('dragover', handleDragOver);
+    row.addEventListener('drop', handleDrop);
+    row.addEventListener('dragend', handleDragEnd);
+
+    // Attach input & remove events
+    row.querySelectorAll('input').forEach(input => input.addEventListener('input', updateJSON));
+    row.querySelector('.btn-remove').addEventListener('click', () => {
+        row.style.transform = 'scale(0.9) translateX(20px)';
+        row.style.opacity = '0';
+        setTimeout(() => {
+            row.remove();
+            updateJSON();
+        }, 300);
+    });
+
+    return row;
+}
+
+function addField(key = "", value = "", placeholder = "Valor...") {
+    const row = createFieldRow(key, value, placeholder);
+    container.appendChild(row);
+    lucide.createIcons({ root: row });
     updateJSON();
-    updateMoveButtons();
+    
+    // Auto focus if added empty
+    if(key === "") {
+        setTimeout(() => row.querySelector('.key-input').focus(), 50);
+    }
 }
 
 /**
- * Move a field row up or down
+ * Drag and Drop Logic
  */
-function moveField(fieldRow, direction) {
-    if (direction === 'up') {
-        const prev = fieldRow.previousElementSibling;
-        if (prev) {
-            container.insertBefore(fieldRow, prev);
-        }
-    } else {
-        const next = fieldRow.nextElementSibling;
-        if (next) {
-            container.insertBefore(next, fieldRow);
+function handleDragStart(e) {
+    draggedItem = this;
+    setTimeout(() => this.classList.add('dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.target.closest('.field-row');
+    if(target && target !== draggedItem) {
+        const bounding = target.getBoundingClientRect();
+        const offset = bounding.y + (bounding.height / 2);
+        if(e.clientY - offset > 0) {
+            target.style.borderBottom = "2px solid var(--brand-rose)";
+            target.style.borderTop = "";
+        } else {
+            target.style.borderTop = "2px solid var(--brand-rose)";
+            target.style.borderBottom = "";
         }
     }
-    updateJSON();
-    updateMoveButtons();
 }
 
-/**
- * Update move buttons disabled state based on position
- */
-function updateMoveButtons() {
-    const rows = container.querySelectorAll('.field-row');
-    rows.forEach((row, index) => {
-        const upBtn = row.querySelector('.btn-move-up');
-        const downBtn = row.querySelector('.btn-move-down');
-        if (upBtn) upBtn.disabled = index === 0;
-        if (downBtn) downBtn.disabled = index === rows.length - 1;
+function handleDrop(e) {
+    e.preventDefault();
+    const target = e.target.closest('.field-row');
+    if(target && target !== draggedItem) {
+        const bounding = target.getBoundingClientRect();
+        const offset = bounding.y + (bounding.height / 2);
+        if(e.clientY - offset > 0) {
+            target.parentNode.insertBefore(draggedItem, target.nextSibling);
+        } else {
+            target.parentNode.insertBefore(draggedItem, target);
+        }
+    }
+    
+    // Reset borders
+    container.querySelectorAll('.field-row').forEach(row => {
+        row.style.borderTop = "";
+        row.style.borderBottom = "";
+    });
+    
+    updateJSON();
+}
+
+function handleDragEnd() {
+    this.classList.remove('dragging');
+    draggedItem = null;
+    container.querySelectorAll('.field-row').forEach(row => {
+        row.style.borderTop = "";
+        row.style.borderBottom = "";
     });
 }
 
-/**
- * Load a template from the dropdown
- */
 function loadTemplate() {
     container.innerHTML = "";
-    if (templates[selector.value]) {
-        templates[selector.value].forEach(f => addField(f.k, f.v, f.p));
+    const selected = templates[selector.value];
+    if (selected) {
+        selected.forEach(f => {
+            const row = createFieldRow(f.k, f.v, f.p);
+            container.appendChild(row);
+        });
+        lucide.createIcons();
     }
     updateJSON();
-    updateMoveButtons();
 }
 
-// Flag to prevent infinite loops during sync
-let isSyncing = false;
-
 /**
- * Update JSON preview and clean prompt text
+ * Data Syncing (UI <-> JSON)
  */
 function updateJSON() {
     if (isSyncing) return;
     
     const result = {
-        prompt_structure: { negative_prompt: negativeInput.value }
+        prompt_structure: {}
     };
-
+    
+    // Use an object to avoid duplicate keys logic cleanly if needed, but array preserves order via DOM
     let promptParts = [];
-    document.querySelectorAll('.key-input').forEach((keyInput, index) => {
-        const k = keyInput.value.toLowerCase().trim().replace(/\s+/g, '_') || `extra_${index}`;
-        let v = document.querySelectorAll('.value-input')[index].value;
+    
+    if(negativeInput.value.trim() !== '') {
+        result.prompt_structure.negative_prompt = negativeInput.value;
+    }
 
+    document.querySelectorAll('.field-row').forEach((row, index) => {
+        const keyInput = row.querySelector('.key-input');
+        const valueInput = row.querySelector('.value-input');
+        
+        let k = keyInput.value.trim();
+        // Convert to valid JSON key format (no spaces) if desired, but arbitrary strings are valid JSON keys.
+        k = k || `extra_${index}`;
+        
+        let v = valueInput.value;
+        
+        // Try parsing arrays/objects loosely
         try {
-            if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) v = JSON.parse(v);
+            if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) {
+                v = JSON.parse(v);
+            }
         } catch (e) {}
 
         result.prompt_structure[k] = v;
 
-        const clean = (val) => {
-            if (typeof val === 'object') return JSON.stringify(val).replace(/[{} "[\]]/g, '').replace(/:/g, ': ').replace(/,/g, ', ');
-            return val;
-        };
-
-        if (v && v.toString().trim() !== "") promptParts.push(clean(v));
+        // Build clean string
+        if (v && v.toString().trim() !== "") {
+            const clean = typeof v === 'object' ? JSON.stringify(v).replace(/[{} "[\]]/g, '') : v;
+            promptParts.push(clean);
+        }
     });
 
     preview.value = JSON.stringify(result, null, 4);
-    textPreview.textContent = promptParts.join(", ") + (negativeInput.value ? " --no " + negativeInput.value : "");
+    
+    let finalText = promptParts.join(", ");
+    if (negativeInput.value.trim() !== '') {
+        finalText += " --no " + negativeInput.value.trim();
+    }
+    textPreview.textContent = finalText;
 }
 
-/**
- * Sync fields from JSON when JSON is edited directly
- */
 function syncFromJSON() {
     if (isSyncing) return;
     
@@ -179,231 +251,270 @@ function syncFromJSON() {
         
         isSyncing = true;
         
-        // Update negative prompt if present
         if (structure.negative_prompt !== undefined) {
             negativeInput.value = structure.negative_prompt;
+        } else {
+            negativeInput.value = "";
         }
         
-        // Get current field rows
-        const fieldRows = container.querySelectorAll('.field-row');
         const keys = Object.keys(structure).filter(k => k !== 'negative_prompt' && k !== 'metadata');
+        const currentRows = container.querySelectorAll('.field-row');
         
-        // Update existing fields or add new ones
+        // Match lengths
+        while(currentRows.length > keys.length) {
+            container.lastChild.remove();
+        }
+        
         keys.forEach((key, index) => {
             let val = structure[key];
             const displayValue = typeof val === 'object' ? JSON.stringify(val) : val;
             
-            if (fieldRows[index]) {
-                // Update existing field
-                const keyInput = fieldRows[index].querySelector('.key-input');
-                const valueInput = fieldRows[index].querySelector('.value-input');
-                if (keyInput) keyInput.value = key.replace(/_/g, ' ');
-                if (valueInput) valueInput.value = displayValue;
+            const existingRow = container.querySelectorAll('.field-row')[index];
+            if (existingRow) {
+                existingRow.querySelector('.key-input').value = key;
+                existingRow.querySelector('.value-input').value = displayValue;
             } else {
-                // Add new field (without triggering updateJSON)
-                const fieldDiv = document.createElement('div');
-                fieldDiv.className = "field-row";
-                fieldDiv.innerHTML = `
-                    <div class="field-actions">
-                        <button onclick="moveField(this.closest('.field-row'), 'up')" class="btn-move btn-move-up" aria-label="Mover arriba">▲</button>
-                        <button onclick="moveField(this.closest('.field-row'), 'down')" class="btn-move btn-move-down" aria-label="Mover abajo">▼</button>
-                    </div>
-                    <input type="text" placeholder="Categoría" value="${key.replace(/_/g, ' ')}" class="input-field field-key key-input">
-                    <input type="text" placeholder="Valor..." value='${displayValue}' class="input-field field-value value-input">
-                    <button onclick="this.parentElement.remove(); updateJSON();" class="btn-remove" aria-label="Eliminar campo">&times;</button>
-                `;
-                container.appendChild(fieldDiv);
-                fieldDiv.querySelectorAll('input').forEach(input => input.addEventListener('input', updateJSON));
+                const row = createFieldRow(key, displayValue);
+                container.appendChild(row);
+                lucide.createIcons({ root: row });
             }
         });
         
-        // Remove extra fields if JSON has fewer keys
-        while (container.querySelectorAll('.field-row').length > keys.length) {
-            const lastRow = container.querySelector('.field-row:last-child');
-            if (lastRow) lastRow.remove();
+        // Update Clean Text
+        let promptParts = keys.map(k => {
+            let v = structure[k];
+            return typeof v === 'object' ? JSON.stringify(v).replace(/[{} "[\]]/g, '') : v;
+        }).filter(v => v !== "");
+        
+        let finalText = promptParts.join(", ");
+        if (negativeInput.value.trim() !== '') {
+            finalText += " --no " + negativeInput.value.trim();
         }
+        textPreview.textContent = finalText;
         
-        // Update clean text preview
-        const promptParts = keys.map(k => {
-            const val = structure[k];
-            if (typeof val === 'object') return JSON.stringify(val).replace(/[{} "[\]]/g, '').replace(/:/g, ': ').replace(/,/g, ', ');
-            return val;
-        }).filter(v => v && v.toString().trim() !== "");
-        
-        textPreview.textContent = promptParts.join(", ") + (negativeInput.value ? " --no " + negativeInput.value : "");
-        
-        updateMoveButtons();
         isSyncing = false;
         
     } catch (e) {
-        // Invalid JSON - just ignore and let user keep typing
+        // Just fail silently while typing invalid JSON
         isSyncing = false;
     }
 }
 
 /**
- * Import JSON data from textarea
+ * Import/Export Actions
  */
 function importJSON() {
     try {
         const data = JSON.parse(importArea.value);
         const structure = data.prompt_structure || data;
         container.innerHTML = "";
-        if (structure.negative_prompt) negativeInput.value = structure.negative_prompt;
+        
+        if (structure.negative_prompt) {
+            negativeInput.value = structure.negative_prompt;
+        } else {
+            negativeInput.value = "";
+        }
+        
         for (const key in structure) {
             if (key !== 'negative_prompt' && key !== 'metadata') {
                 let val = structure[key];
-                addField(key.replace(/_/g, ' '), (typeof val === 'object' ? JSON.stringify(val) : val));
+                const row = createFieldRow(key, typeof val === 'object' ? JSON.stringify(val) : val);
+                container.appendChild(row);
             }
         }
+        lucide.createIcons();
         importArea.value = "";
         switchTab('editor');
         updateJSON();
+        showToast("JSON Importado con éxito", "check-circle");
     } catch (e) {
-        alert("JSON no válido.");
+        showToast("JSON no válido", "alert-circle");
     }
 }
 
-/**
- * Copy clean prompt to clipboard
- */
+const aiPromptsData = {
+    general: `Actúa como un experto en ingeniería de prompts (Prompt Engineering) para Midjourney, Stable Diffusion y modelos de generación de imágenes de alta gama.
+Tu tarea es describir detalladamente [INSTRUCCIÓN: describe la imagen o idea] y estructurar la información en formato JSON plano compatible con mi sistema.
+Crea categorías (llaves) que describan los elementos (ej. "sujeto", "entorno", "iluminacion", "estilo") y usa descripciones ricas de keywords separadas por comas.
+IMPORTANTE: Devuelve ÚNICAMENTE código JSON válido encapsulado en Markdown. El JSON debe tener un objeto raíz llamado "prompt_structure". Dentro de él, incluye tus categorías, y asegura incluir una llave "negative_prompt" para lo que NO debe aparecer. Ejemplo: {"prompt_structure": {"sujeto": "...", "iluminacion": "...", "negative_prompt": "low quality, text"}}`,
+
+    interior: `Actúa como un experto en ingeniería de prompts. Analiza la imagen de diseño de interiores y convierte toda la información visual a un formato JSON estructurado y altamente detallado.
+Concéntrate específicamente en aislar objetos individuales y la ubicación de las luces. Para cada objeto clave, extrae su color preciso y material exacto (ej. cuero mate, madera de roble).
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "room_style": "...",
+    "overall_colour_palette": "...",
+    "key_objects": "...",
+    "lighting_position": "...",
+    "negative_prompt": "low quality, blurry, distorted"
+  }
+}`,
+
+    layout: `Actúa como un experto en ingeniería de prompts. Analiza esta imagen de una habitación interior y extrae los datos espaciales y de distribución a un formato JSON estructurado.
+Concéntrate en el acomodo de los muebles existentes y las proporciones espaciales.
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "architectural_style": "...",
+    "room_dimensions_estimate": "...",
+    "lighting_setup": "...",
+    "furniture_layout": "...",
+    "negative_prompt": "low quality, deformed people"
+  }
+}`,
+
+    object: `Actúa como un experto en ingeniería de prompts. Analiza esta imagen de una pieza de mobiliario u objeto independiente.
+Extrae sus especificaciones exactas de diseño a un formato JSON estructurado para que pueda ser integrado en otra escena.
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "furniture_type": "...",
+    "design_style": "...",
+    "primary_material": "...",
+    "color_palette": "...",
+    "notable_features": "...",
+    "negative_prompt": "low quality, background, context"
+  }
+}`,
+
+    atmosphere: `Actúa como un experto en ingeniería de prompts. Analiza las propiedades físicas y atmosféricas de esta imagen interior y conviértelas a un formato JSON estructurado.
+Presta extrema atención a la configuración de iluminación y al entorno exterior visible.
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "architectural_elements": "...",
+    "current_lighting_type": "...",
+    "light_source_positions": "...",
+    "shadow_intensity": "...",
+    "exterior_weather_visible": "...",
+    "negative_prompt": "low quality, flat lighting"
+  }
+}`,
+
+    camera: `Actúa como un experto en composición fotográfica. Analiza esta fotografía arquitectónica y extrae la configuración geométrica y técnica de cámara en un JSON estructurado.
+REGLA ESTRICTA: No incluyas descripciones de objetos, materiales o sujetos. Enfócate completamente en la composición espacial, características del lente y encuadre. Describe los puntos de fuga de forma matemática y los puntos focales con términos de cuadrícula.
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "camera_angle": "...",
+    "estimated_focal_length": "...",
+    "depth_of_field": "...",
+    "vanishing_points": "...",
+    "focal_point_grid": "...",
+    "negative_prompt": "objects, people, specific structures"
+  }
+}`,
+
+    branding: `Actúa como un experto en diseño gráfico. Analiza esta imagen que contiene elementos de tipografía y branding, y extrae los detalles en un formato JSON estructurado.
+Concéntrate fuertemente en el contenido exacto del texto, estilo de la fuente y características del logotipo.
+CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
+{
+  "prompt_structure": {
+    "background_context": "...",
+    "exact_text_string": "...",
+    "font_style_description": "...",
+    "brand_colors": "...",
+    "logo_shape_description": "...",
+    "negative_prompt": "low quality, messy, unreadable text"
+  }
+}`
+};
+
+function copyAiPrompt() {
+    const selector = document.getElementById('aiPromptSelector');
+    const promptText = aiPromptsData[selector ? selector.value : 'general'];
+    navigator.clipboard.writeText(promptText);
+    showToast("Prompt IA copiado al portapapeles", "bot");
+}
+
 function copyCleanPrompt() {
-    navigator.clipboard.writeText(textPreview.textContent.replace(/"/g, '').trim());
-    showNotification("Prompt copiado al portapapeles");
+    const text = textPreview.textContent.trim();
+    if(!text) return showToast("No hay prompt para copiar", "alert-triangle");
+    navigator.clipboard.writeText(text);
+    showToast("Prompt copiado al portapapeles", "copy-check");
 }
 
-/**
- * Copy JSON to clipboard
- */
 function copyToClipboard() {
-    navigator.clipboard.writeText(preview.textContent);
-    showNotification("JSON copiado al portapapeles");
+    navigator.clipboard.writeText(preview.value);
+    showToast("JSON copiado al portapapeles", "copy-check");
 }
 
-/**
- * Download JSON file
- */
 function downloadJSON() {
-    const blob = new Blob([preview.textContent], { type: 'application/json' });
+    const blob = new Blob([preview.value], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `architect-export-${Date.now()}.json`;
+    a.download = `architect-prompt-${Date.now()}.json`;
     a.click();
-    showNotification("Archivo JSON descargado");
+    showToast("Archivo exportado", "download");
 }
 
 /**
- * Add library item to fields when clicked
+ * Bento Library Integration
  */
-function addLibraryItem(category, keyword, description) {
-    // Create a formatted key based on category
-    const categoryMap = {
-        'Cámara': 'camara',
-        'Lentes': 'lente',
-        'Composición': 'composicion',
-        'Iluminación': 'iluminacion',
-        'Fotografía': 'estilo_foto',
-        'Ilustración': 'estilo_ilustracion',
-        'UX / UI': 'ui_style'
-    };
+let currentCategoryIndex = 0;
+const cards = document.querySelectorAll('.bento-card');
+
+function showCategory(index) {
+    if (cards.length === 0) return;
+    cards.forEach(card => card.classList.remove('active'));
     
-    // Find matching category key
-    let fieldKey = 'estilo';
-    for (const [cat, key] of Object.entries(categoryMap)) {
-        if (category.includes(cat)) {
-            fieldKey = key;
-            break;
-        }
+    if (index >= cards.length) {
+        currentCategoryIndex = 0;
+    } else if (index < 0) {
+        currentCategoryIndex = cards.length - 1;
+    } else {
+        currentCategoryIndex = index;
     }
     
-    // Add the field with the keyword as value
-    addField(fieldKey, keyword, description);
-    
-    // Scroll to the fields container
-    container.scrollTop = container.scrollHeight;
-    
-    // Show notification
-    showNotification(`"${keyword}" añadido al prompt`);
+    cards[currentCategoryIndex].classList.add('active');
 }
 
-/**
- * Initialize library item click handlers
- */
-function initLibraryClicks() {
-    document.querySelectorAll('.cheat-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            
-            // Get the category from the parent details summary
-            const details = item.closest('.cheat-card');
-            const category = details.querySelector('summary span:first-child').textContent;
-            
-            // Parse the item content - extract keyword (bold text) and description
-            const boldText = item.querySelector('b');
-            if (boldText) {
-                const keyword = boldText.textContent.replace(':', '').trim();
-                const fullText = item.textContent;
-                const description = fullText.replace(boldText.textContent, '').trim();
-                
-                addLibraryItem(category, keyword, description);
-            }
+window.prevCategory = function() {
+    showCategory(currentCategoryIndex - 1);
+};
+
+window.nextCategory = function() {
+    showCategory(currentCategoryIndex + 1);
+};
+
+document.querySelectorAll('.bento-tags .tag').forEach(tag => {
+    tag.addEventListener('click', (e) => {
+        let val = e.target.getAttribute('data-val') || e.target.textContent;
+        let categoryElement = e.target.closest('.bento-card').getAttribute('data-category');
+        
+        // formatting the target key nicely
+        let keyFormatted = categoryElement.toLowerCase().replace(/\s+/g, '_');
+        if(keyFormatted === "aspect_ratio") keyFormatted = "ar";
+        
+        addField(keyFormatted, val);
+        showToast(`"${val}" añadido`, "plus-circle");
+        
+        // Scroll editor to bottom smoothly
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
         });
     });
-}
+});
 
 /**
- * Show notification toast
+ * Modern Toast System
  */
-function showNotification(message) {
-    // Remove existing notification if any
-    const existing = document.querySelector('.notification-toast');
-    if (existing) existing.remove();
-
+function showToast(message, iconName = "info") {
+    const toaster = document.getElementById('toastContainer');
     const toast = document.createElement('div');
-    toast.className = 'notification-toast';
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, #c9a962, #8b7235);
-        color: #0a0a0a;
-        padding: 12px 32px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        box-shadow: 0 10px 40px rgba(201, 169, 98, 0.3);
-        z-index: 1000;
-        animation: toastIn 0.3s ease forwards;
-    `;
-
-    // Add animation keyframes
-    if (!document.querySelector('#toast-styles')) {
-        const style = document.createElement('style');
-        style.id = 'toast-styles';
-        style.textContent = `
-            @keyframes toastIn {
-                from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                to { opacity: 1; transform: translateX(-50%) translateY(0); }
-            }
-            @keyframes toastOut {
-                from { opacity: 1; transform: translateX(-50%) translateY(0); }
-                to { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    document.body.appendChild(toast);
+    toast.className = 'toast';
+    toast.innerHTML = `<i data-lucide="${iconName}"></i> <span>${message}</span>`;
+    
+    toaster.appendChild(toast);
+    lucide.createIcons({ root: toast });
 
     setTimeout(() => {
-        toast.style.animation = 'toastOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
+        toast.classList.add('removing');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 2500);
 }
 
-// Initialize on page load
+// Initial Bootstrap
 loadTemplate();
-initLibraryClicks();
