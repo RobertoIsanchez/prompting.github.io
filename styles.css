@@ -233,7 +233,30 @@ body::before {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
+}
+
+.robot-matrix {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.8;
+    mix-blend-mode: screen;
+}
+
+@keyframes robot-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 .header-title {
@@ -444,31 +467,34 @@ button {
     }
 
     .studio-panel {
-        order: 3;
-    }
-
-    .negative-panel {
-        order: 4;
-    }
-
-    .action-bar {
-        order: 5;
+        order: 1;
     }
 
     .library-panel {
-        order: 6;
+        order: 2;
+    }
+
+    .negative-panel {
+        order: 3;
     }
 
     .json-panel {
-        order: 7;
+        order: 4;
     }
 
     .output-panel {
-        order: 8;
+        order: 5;
+    }
+
+    .action-bar {
+        order: 6;
+        margin-top: 16px;
+        border-top: 1px solid var(--border-light);
+        padding-top: 24px;
     }
 
     .import-overlay {
-        order: 9;
+        order: 10;
     }
 }
 
@@ -988,7 +1014,7 @@ button {
     50% {
         transform: scale(1.4);
         filter: brightness(2);
-        shadow: 0 0 15px var(--brand-rose);
+        box-shadow: 0 0 15px var(--brand-rose);
     }
 
     100% {

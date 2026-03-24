@@ -527,3 +527,74 @@ function showToast(message, iconName = "info") {
 
 // Initial Bootstrap
 loadTemplate();
+
+/**
+ * Robot Matrix Animation (Radial Binary Particles)
+ */
+function initMatrixAnimation() {
+    const canvas = document.getElementById('matrixCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleCount = 8
+
+    const resize = () => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+
+        reset() {
+            this.x = canvas.width / 2;
+            this.y = canvas.height / 2;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 0.2 + Math.random() * 2;
+            this.vx = Math.cos(angle) * speed;
+            this.vy = Math.sin(angle) * speed;
+            this.life = 1;
+            this.decay = 0.01 + Math.random() * 0.02;
+            this.char = Math.random() > 0.5 ? "0" : "1";
+            this.size = 8 + Math.random() * 6;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.life -= this.decay;
+            if (this.life <= 0) {
+                this.reset();
+            }
+        }
+
+        draw() {
+            ctx.fillStyle = `rgba(255, 59, 92, ${this.life * 0.5})`; // Brand crimson
+            ctx.font = `${this.size}px monospace`;
+            ctx.fillText(this.char, this.x, this.y);
+        }
+    }
+
+    // Initialize particles
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+document.addEventListener('DOMContentLoaded', initMatrixAnimation);

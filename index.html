@@ -33,6 +33,7 @@
             <div class="header-brand">
                 <div class="header-robot">
                     <img src="Logo.png" alt="RNGD Robot" class="robot-icon">
+                    <canvas id="matrixCanvas" class="robot-matrix"></canvas>
                 </div>
                 <div>
                     <h1 class="header-title">JSON <span class="text-gradient"> Prompts</span></h1>
@@ -62,7 +63,6 @@
 
                 <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
 
-                <!-- AI Analysis Templates -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Template de
                         Análisis:</span>
@@ -96,15 +96,12 @@
                             title="Copiar el prompt seleccionado a tu portapapeles">
                             <i data-lucide="copy" class="icon-gradient"></i>
                         </button>
+                        <button onclick="switchTab('import')" class="btn-ghost btn-icon" title="Importar código JSON">
+                            <i data-lucide="download" class="icon-gradient"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
-
-                <!-- Importation -->
-                <button onclick="switchTab('import')" class="btn-ghost btn-icon" title="Importar código JSON">
-                    <i data-lucide="download" class="icon-gradient"></i>
-                </button>
             </div>
         </header>
 
@@ -482,7 +479,7 @@
                         <!-- AR Card -->
                         <div class="bento-card bento-wide" data-category="Aspect Ratio">
                             <div class="bento-header">
-                                <i data-lucide="aspect-ratio" class="bento-icon"></i>
+                                <i data-lucide="maximize" class="bento-icon"></i>
                                 <span>Aspect Ratios '--ar'</span>
                             </div>
                             <div class="bento-tags flex-wrap">
