@@ -116,6 +116,12 @@ body::before {
     padding: 24px 32px;
 }
 
+@media (max-width: 600px) {
+    .main-container {
+        padding: 16px 12px;
+    }
+}
+
 /* Glass Panels - Refined */
 .glass-panel {
     background: var(--bg-panel);
@@ -153,6 +159,41 @@ body::before {
     padding: 16px 24px;
     margin-bottom: 32px;
     border-radius: var(--radius-xl);
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+
+    .header-actions>div {
+        flex-direction: column;
+        align-items: flex-start !important;
+        width: 100%;
+    }
+
+    .template-select {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .header-actions>div:nth-child(2),
+    .header-actions>div:nth-child(4) {
+        display: none !important;
+        /* Hide vertical separators on mobile */
+    }
 }
 
 .header-brand {
@@ -386,6 +427,51 @@ button {
     position: relative;
 }
 
+@media (max-width: 1023px) {
+    .workspace-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Target direct children of editor-section and sidebar-section if needed, 
+       but easier to reorder at section level first if possible.
+       Actually, since we want to interleave sections, we should flatten the grid or use orders. */
+
+    .editor-section,
+    .sidebar-section {
+        display: contents;
+        /* Unwraps the sections to let grid items be ordered directly */
+    }
+
+    .studio-panel {
+        order: 3;
+    }
+
+    .negative-panel {
+        order: 4;
+    }
+
+    .action-bar {
+        order: 5;
+    }
+
+    .library-panel {
+        order: 6;
+    }
+
+    .json-panel {
+        order: 7;
+    }
+
+    .output-panel {
+        order: 8;
+    }
+
+    .import-overlay {
+        order: 9;
+    }
+}
+
 /* Panel Common */
 .panel-header {
     display: flex;
@@ -502,6 +588,27 @@ button {
     border-radius: var(--radius-md);
     padding: 8px 12px;
     transition: all 0.2s ease;
+}
+
+@media (max-width: 480px) {
+    .field-row {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .field-key {
+        width: 35% !important;
+        font-size: 0.85rem;
+    }
+
+    .field-value {
+        font-size: 0.85rem;
+    }
+
+    .btn-drag,
+    .btn-remove {
+        padding: 4px;
+    }
 }
 
 .field-row:hover {
@@ -672,6 +779,16 @@ button {
     grid-template-columns: 1fr;
     gap: 12px;
     padding: 16px;
+}
+
+@media (max-width: 600px) {
+    .bento-grid {
+        padding: 12px 8px;
+    }
+
+    .bento-card {
+        padding: 12px;
+    }
 }
 
 .bento-card {
