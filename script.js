@@ -79,12 +79,12 @@ function createFieldRow(key = "", value = "", placeholder = "Valor...") {
 
     row.innerHTML = `
         <button class="btn-drag" title="Arrastrar para reordenar">
-            <i data-lucide="grip-vertical"></i>
+            <i data-lucide="grip-vertical" class="icon-gradient"></i>
         </button>
         <input type="text" placeholder="Categoría" value="${key}" class="input-field field-key key-input">
         <input type="text" placeholder="${placeholder}" value='${value}' class="input-field field-value value-input">
         <button class="btn-remove" title="Eliminar">
-            <i data-lucide="trash-2"></i>
+            <i data-lucide="trash-2" class="icon-gradient"></i>
         </button>
     `;
 
@@ -137,10 +137,10 @@ function handleDragOver(e) {
         const bounding = target.getBoundingClientRect();
         const offset = bounding.y + (bounding.height / 2);
         if (e.clientY - offset > 0) {
-            target.style.borderBottom = "2px solid var(--brand-rose)";
+            target.style.borderBottom = "2px solid var(--brand-white)";
             target.style.borderTop = "";
         } else {
-            target.style.borderTop = "2px solid var(--brand-rose)";
+            target.style.borderTop = "2px solid var(--brand-white)";
             target.style.borderBottom = "";
         }
     }
@@ -191,8 +191,35 @@ function loadTemplate() {
 }
 
 /**
- * Data Syncing (UI <-> JSON)
+ * Data Syncing (UI <-> JSON/TOON)
  */
+let outputFormat = "json";
+
+function setFormat(format) {
+    outputFormat = format;
+    
+    // UI Update
+    document.getElementById('jsonBtn').classList.toggle('active', format === 'json');
+    document.getElementById('toonBtn').classList.toggle('active', format === 'toon');
+    
+    updateJSON();
+    showToast(`Cambiado a formato ${format.toUpperCase()}`, "settings");
+}
+
+function convertToTOON(obj) {
+    let output = "prompt_structure:\n";
+    const structure = obj.prompt_structure || {};
+    for (const [key, val] of Object.entries(structure)) {
+        if (key !== 'negative_prompt') {
+            output += `  ${key}: ${val}\n`;
+        }
+    }
+    if (structure.negative_prompt) {
+        output += `negative_prompt: ${structure.negative_prompt}`;
+    }
+    return output.trim();
+}
+
 function updateJSON() {
     if (isSyncing) return;
 
@@ -200,24 +227,17 @@ function updateJSON() {
         prompt_structure: {}
     };
 
-    // Use an object to avoid duplicate keys logic cleanly if needed, but array preserves order via DOM
     let promptParts = [];
-
-    if (negativeInput.value.trim() !== '') {
-        result.prompt_structure.negative_prompt = negativeInput.value;
-    }
 
     document.querySelectorAll('.field-row').forEach((row, index) => {
         const keyInput = row.querySelector('.key-input');
         const valueInput = row.querySelector('.value-input');
 
         let k = keyInput.value.trim();
-        // Convert to valid JSON key format (no spaces) if desired, but arbitrary strings are valid JSON keys.
         k = k || `extra_${index}`;
 
         let v = valueInput.value;
 
-        // Try parsing arrays/objects loosely
         try {
             if ((v.startsWith('{') && v.endsWith('}')) || (v.startsWith('[') && v.endsWith(']'))) {
                 v = JSON.parse(v);
@@ -226,14 +246,22 @@ function updateJSON() {
 
         result.prompt_structure[k] = v;
 
-        // Build clean string
         if (v && v.toString().trim() !== "") {
             const clean = typeof v === 'object' ? JSON.stringify(v).replace(/[{} "[\]]/g, '') : v;
             promptParts.push(clean);
         }
     });
 
-    preview.value = JSON.stringify(result, null, 4);
+    if (negativeInput.value.trim() !== '') {
+        result.prompt_structure.negative_prompt = negativeInput.value;
+    }
+
+    // Format output
+    if (outputFormat === "json") {
+        preview.value = JSON.stringify(result, null, 4);
+    } else {
+        preview.value = convertToTOON(result);
+    }
 
     let finalText = promptParts.join(", ");
     if (negativeInput.value.trim() !== '') {
@@ -336,10 +364,12 @@ const aiPromptsData = {
     general: `Actúa como un experto en ingeniería de prompts (Prompt Engineering) para Midjourney, Stable Diffusion y modelos de generación de imágenes de alta gama.
 Tu tarea es describir detalladamente [INSTRUCCIÓN: describe la imagen o idea] y estructurar la información en formato JSON plano compatible con mi sistema.
 Crea categorías (llaves) que describan los elementos (ej. "sujeto", "entorno", "iluminacion", "estilo") y usa descripciones ricas de keywords separadas por comas.
+IMPORTANTE: Cada descripción en los valores debe ser extremadamente concisa (menos de 10 palabras).
 IMPORTANTE: Devuelve ÚNICAMENTE código JSON válido encapsulado en Markdown. El JSON debe tener un objeto raíz llamado "prompt_structure". Dentro de él, incluye tus categorías, y asegura incluir una llave "negative_prompt" para lo que NO debe aparecer. Ejemplo: {"prompt_structure": {"sujeto": "...", "iluminacion": "...", "negative_prompt": "low quality, text"}}`,
 
     interior: `Actúa como un experto en ingeniería de prompts. Analiza la imagen de diseño de interiores y convierte toda la información visual a un formato JSON estructurado y altamente detallado.
 Concéntrate específicamente en aislar objetos individuales y la ubicación de las luces. Para cada objeto clave, extrae su color preciso y material exacto (ej. cuero mate, madera de roble).
+IMPORTANTE: Cada descripción debe ser extremadamente corta (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -353,6 +383,7 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
 
     layout: `Actúa como un experto en ingeniería de prompts. Analiza esta imagen de una habitación interior y extrae los datos espaciales y de distribución a un formato JSON estructurado.
 Concéntrate en el acomodo de los muebles existentes y las proporciones espaciales.
+IMPORTANTE: Cada descripción debe ser extremadamente corta (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -366,6 +397,7 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
 
     object: `Actúa como un experto en ingeniería de prompts. Analiza esta imagen de una pieza de mobiliario u objeto independiente.
 Extrae sus especificaciones exactas de diseño a un formato JSON estructurado para que pueda ser integrado en otra escena.
+IMPORTANTE: Cada campo debe ser muy breve (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -378,8 +410,9 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
   }
 }`,
 
-    atmosphere: `Actúa como un experto en ingeniería de prompts. Analiza las propiedades físicas y atmosféricas de esta imagen interior y conviértelas a un formato JSON estructurado.
+    atmosphere: `Actúa como un experto en ingeniería de prompts. Analiza las propiedades físicas and atmosféricas de esta imagen interior y conviértelas a un formato JSON estructurado.
 Presta extrema atención a la configuración de iluminación y al entorno exterior visible.
+IMPORTANTE: Cada descripción debe ser muy breve (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -394,6 +427,7 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
 
     camera: `Actúa como un experto en composición fotográfica. Analiza esta fotografía arquitectónica y extrae la configuración geométrica y técnica de cámara en un JSON estructurado.
 REGLA ESTRICTA: No incluyas descripciones de objetos, materiales o sujetos. Enfócate completamente en la composición espacial, características del lente y encuadre. Describe los puntos de fuga de forma matemática y los puntos focales con términos de cuadrícula.
+IMPORTANTE: Cada descripción debe ser extremadamente corta (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -408,6 +442,7 @@ CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown
 
     branding: `Actúa como un experto en diseño gráfico. Analiza esta imagen que contiene elementos de tipografía y branding, y extrae los detalles en un formato JSON estructurado.
 Concéntrate fuertemente en el contenido exacto del texto, estilo de la fuente y características del logotipo.
+IMPORTANTE: Cada campo debe ser muy breve (menos de 10 palabras).
 CRÍTICO: Devuelve ÚNICAMENTE código JSON válido dentro de un bloque Markdown, siguiendo exactamente esta estructura:
 {
   "prompt_structure": {
@@ -440,7 +475,8 @@ function copyCleanPrompt() {
 function copyToClipboard() {
     triggerPulse(event.currentTarget.querySelector('i'));
     navigator.clipboard.writeText(preview.value);
-    showToast("JSON copiado al portapapeles", "copy-check");
+    const label = outputFormat === 'json' ? "JSON" : "TOON";
+    showToast(`${label} copiado al portapapeles`, "copy-check");
 }
 
 function triggerPulse(el) {
@@ -496,14 +532,32 @@ document.querySelectorAll('.bento-tags .tag').forEach(tag => {
         let keyFormatted = categoryElement.toLowerCase().replace(/\s+/g, '_');
         if (keyFormatted === "aspect_ratio") keyFormatted = "ar";
 
-        addField(keyFormatted, val);
-        showToast(`"${val}" añadido`, "plus-circle");
+        // Check if field already exists to append or create
+        const rows = Array.from(container.querySelectorAll('.field-row'));
+        const existingRow = rows.find(row => row.querySelector('.key-input').value === keyFormatted);
 
-        // Scroll editor to bottom smoothly
-        container.scrollTo({
-            top: container.scrollHeight,
-            behavior: 'smooth'
-        });
+        if (existingRow) {
+            const valueInput = existingRow.querySelector('.value-input');
+            let currentValues = valueInput.value.split(',').map(v => v.trim()).filter(v => v !== "");
+            
+            if (!currentValues.includes(val)) {
+                currentValues.push(val);
+                valueInput.value = currentValues.join(", ");
+                updateJSON();
+                showToast(`"${val}" añadido a ${categoryElement}`, "plus-circle");
+            } else {
+                showToast(`"${val}" ya está presente`, "info");
+            }
+        } else {
+            addField(keyFormatted, val);
+            showToast(`"${val}" añadido`, "plus-circle");
+        }
+
+        // Scroll editor to the modified/new field smoothly
+        const targetRow = existingRow || container.lastElementChild;
+        if (targetRow) {
+            targetRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     });
 });
 
@@ -562,6 +616,10 @@ function initMatrixAnimation() {
             this.decay = 0.01 + Math.random() * 0.02;
             this.char = Math.random() > 0.5 ? "0" : "1";
             this.size = 8 + Math.random() * 6;
+            
+            // Random chromatic color matching the new palette
+            const colors = ['#6366f1', '#a855f7', '#ec4899', '#f97316'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
         }
 
         update() {
@@ -574,9 +632,11 @@ function initMatrixAnimation() {
         }
 
         draw() {
-            ctx.fillStyle = `rgba(255, 59, 92, ${this.life * 0.5})`; // Brand crimson
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.life * 0.7;
             ctx.font = `${this.size}px monospace`;
             ctx.fillText(this.char, this.x, this.y);
+            ctx.globalAlpha = 1;
         }
     }
 

@@ -1,33 +1,40 @@
 /* CSS Variables - OLED Premium Palette */
 :root {
-    --bg-base: #030305;
-    --bg-panel: rgba(14, 14, 18, 0.4);
-    --bg-panel-hover: rgba(20, 20, 26, 0.6);
-    --bg-input: rgba(0, 0, 0, 0.3);
+    --bg-base: #020202;
+    --bg-panel: rgba(20, 20, 25, 0.6);
+    --bg-panel-hover: rgba(30, 30, 35, 0.8);
+    --bg-input: rgba(0, 0, 0, 0.5);
 
-    --brand-crimson: #ff3b5c;
-    --brand-rose: #ff4d7d;
-    --brand-orange: #ff6b35;
-    --brand-gold: #f5b841;
-    --brand-cyan: #00f0ff;
+    --brand-silver: #e2e8f0;
+    --brand-chrome: #ffffff;
+    --brand-gray: #94a3b8;
+    --brand-white: #ffffff;
+    --brand-cyan: #00f0ff; /* Keeping cyan for some highlights */
 
-    --text-main: #fcfcfc;
-    --text-muted: #8a8a93;
-    --text-dim: #54545c;
+    --chromatic-1: #6366f1; /* Electric Blue */
+    --chromatic-2: #a855f7; /* Tech Purple */
+    --chromatic-3: #ec4899; /* Neon Pink */
+    --chromatic-4: #f97316; /* Bright Orange */
 
-    --border-light: rgba(255, 255, 255, 0.06);
-    --border-accent: rgba(255, 59, 92, 0.2);
-    --border-focus: rgba(255, 59, 92, 0.5);
+    --chromatic-gradient: linear-gradient(135deg, var(--chromatic-1), var(--chromatic-2), var(--chromatic-3), var(--chromatic-4));
 
-    --glow-crimson: rgba(255, 59, 92, 0.3);
-    --glow-gold: rgba(245, 184, 65, 0.2);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(255, 255, 255, 0.2);
+    --border-focus: rgba(255, 255, 255, 0.5);
+
+    --glow-silver: rgba(255, 255, 255, 0.15);
+    --glow-chromatic: rgba(0, 240, 255, 0.3);
 
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
     --radius-xl: 24px;
 
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -49,6 +56,27 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Custom Chromatic Scrollbar (V2) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--chromatic-gradient);
+    border-radius: 10px;
+    border: 2px solid var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    filter: brightness(1.2);
+}
+
+
 /* Background Effects - Dynamic Mesh */
 body::before {
     content: '';
@@ -57,10 +85,7 @@ body::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background:
-        radial-gradient(circle at 0% 0%, var(--glow-crimson) 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, var(--glow-gold) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(3, 3, 5, 0.8) 0%, var(--bg-base) 100%);
+    background: #020202; /* Pure OLED Black */
     z-index: -2;
 }
 
@@ -74,21 +99,8 @@ body::before {
     animation: mesh-float 25s infinite alternate ease-in-out;
 }
 
-.orb-1 {
-    top: -20%;
-    left: -10%;
-    width: 800px;
-    height: 800px;
-    background: conic-gradient(from 180deg at 50% 50%, var(--brand-crimson), var(--brand-orange), var(--brand-crimson));
-}
-
-.orb-2 {
-    bottom: -20%;
-    right: -10%;
-    width: 700px;
-    height: 700px;
-    background: conic-gradient(from 0deg at 50% 50%, var(--brand-orange), var(--brand-gold), var(--brand-orange));
-    animation-delay: -12s;
+.orb-1, .orb-2 {
+    display: none; /* Removing background orbs to keep it pure black */
 }
 
 @keyframes mesh-float {
@@ -134,6 +146,7 @@ body::before {
     animation: panel-entrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
+
 @keyframes panel-entrance {
     from {
         opacity: 0;
@@ -147,8 +160,9 @@ body::before {
 }
 
 .glass-panel:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
     background: var(--bg-panel-hover);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.05);
 }
 
 /* Header */
@@ -226,7 +240,7 @@ body::before {
     width: 48px;
     height: 48px;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 15px var(--glow-crimson));
+    filter: drop-shadow(0 0 15px var(--glow-silver));
 }
 
 .robot-icon {
@@ -266,10 +280,17 @@ body::before {
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, var(--brand-crimson), var(--brand-orange));
+    background: var(--chromatic-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.3));
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+@keyframes metal-shimmer {
+    to { background-position: 200% center; }
 }
 
 @keyframes holo-shimmer {
@@ -278,8 +299,12 @@ body::before {
     }
 }
 
-.icon-gradient {
+.icon-gradient, 
+.icon-gradient svg, 
+.btn-primary i svg {
     stroke: url(#brandGrad) !important;
+    filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
+    transition: var(--transition);
 }
 
 .header-subtitle {
@@ -309,21 +334,55 @@ button {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--brand-crimson), var(--brand-orange));
-    color: white;
-    border: none;
-    padding: 12px 24px;
+    background: linear-gradient(var(--bg-base), var(--bg-base)) padding-box,
+                var(--chromatic-gradient) border-box;
+    border: 2px solid transparent;
+    padding: 11px 24px;
     border-radius: var(--radius-md);
-    font-weight: 600;
+    font-weight: 800;
     font-size: 0.95rem;
-    box-shadow: 0 4px 15px var(--glow-crimson);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white; /* Fallback */
+}
+
+/* Specific styling for the text inside via span */
+.btn-primary span {
+    background: var(--chromatic-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-primary i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-primary:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 30px var(--glow-crimson);
-    filter: brightness(1.2);
+    box-shadow: 
+        0 10px 30px rgba(168, 85, 247, 0.3),
+        0 0 15px var(--chromatic-2);
+    background: var(--chromatic-gradient) border-box;
 }
+
+.btn-primary:hover span {
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+}
+
+.btn-primary:hover i {
+    stroke: #fff !important;
+}
+
 
 .btn-primary:active {
     transform: translateY(-1px) scale(0.98);
@@ -339,9 +398,10 @@ button {
 }
 
 .btn-outline:hover {
-    border-color: var(--brand-crimson);
-    background: rgba(255, 59, 92, 0.1);
-    color: var(--brand-rose);
+    border-color: var(--brand-white);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--brand-chrome);
+    box-shadow: 0 0 15px var(--glow-silver);
 }
 
 .btn-ghost {
@@ -355,7 +415,11 @@ button {
 
 .btn-ghost:hover {
     color: var(--text-main);
-    background: var(--bg-panel-hover);
+    background: linear-gradient(var(--bg-base), var(--bg-base)) padding-box,
+                var(--chromatic-gradient) border-box;
+    border: 1px solid transparent;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+    transform: translateY(-2px);
 }
 
 .btn-sm {
@@ -391,10 +455,11 @@ button {
 .select-icon {
     position: absolute;
     left: 14px;
-    color: var(--brand-crimson);
     width: 18px;
     height: 18px;
     pointer-events: none;
+    stroke: url(#brandGrad) !important;
+    filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
 }
 
 .template-select {
@@ -418,8 +483,8 @@ button {
 
 .template-select:focus {
     outline: none;
-    border-color: var(--brand-crimson);
-    box-shadow: 0 0 0 2px var(--glow-crimson);
+    border-color: var(--brand-white);
+    box-shadow: 0 0 0 2px var(--glow-silver);
 }
 
 /* Workspace Grid */
@@ -525,11 +590,11 @@ button {
 }
 
 .text-rose {
-    color: var(--brand-rose);
+    color: var(--brand-white);
 }
 
 .text-gold {
-    color: var(--brand-gold);
+    color: var(--brand-silver);
 }
 
 /* Output Prompt */
@@ -588,21 +653,20 @@ button {
 }
 
 /* Scrollbar */
+/* Scrollbar (V2 Legacy Cleanup) */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--chromatic-gradient);
     border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid var(--bg-base);
 }
 
 .field-row {
@@ -675,8 +739,8 @@ button {
     width: 30%;
     background: transparent;
     border-radius: var(--radius-sm);
-    font-weight: 500;
-    color: var(--brand-rose);
+    font-weight: 600;
+    color: var(--brand-silver);
     border: 1px solid transparent;
 }
 
@@ -790,13 +854,13 @@ button {
 }
 
 .text-gold-glow {
-    color: #f5ecc5;
-    text-shadow: 0 0 10px rgba(245, 184, 65, 0.3);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 
 .text-rose-glow {
-    color: #ffdce6;
-    text-shadow: 0 0 10px rgba(255, 77, 125, 0.3);
+    color: #e2e8f0;
+    text-shadow: 0 0 10px rgba(226, 232, 240, 0.4);
 }
 
 /* Bento Box Library */
@@ -872,8 +936,9 @@ button {
 }
 
 .nav-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--brand-rose);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--brand-white);
+    box-shadow: 0 0 10px var(--glow-silver);
 }
 
 .nav-btn i {
@@ -885,7 +950,6 @@ button {
 .bento-icon {
     width: 16px;
     height: 16px;
-    color: var(--brand-crimson);
 }
 
 .bento-tags {
@@ -908,9 +972,14 @@ button {
 
 .tag:hover {
     color: var(--text-main);
-    border-color: var(--border-accent);
-    background: rgba(255, 59, 92, 0.1);
-    transform: scale(1.05);
+    border-color: var(--brand-white);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 4px 15px rgba(255, 255, 255, 0.1),
+        0 0 15px var(--chromatic-2),
+        -5px 0 12px rgba(255, 0, 234, 0.4),
+        5px 0 12px rgba(0, 240, 255, 0.4);
 }
 
 .tag:active {
@@ -934,10 +1003,11 @@ button {
 }
 
 .toast {
-    background: rgba(20, 20, 26, 0.9);
-    backdrop-filter: blur(12px);
-    border-left: 4px solid var(--brand-rose);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    background: rgba(10, 10, 15, 0.9);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--brand-white);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     color: white;
     padding: 16px 24px;
     border-radius: var(--radius-md);
@@ -952,7 +1022,7 @@ button {
 .toast i {
     width: 18px;
     height: 18px;
-    color: var(--brand-rose);
+    color: var(--brand-white);
 }
 
 .toast.removing {
@@ -1014,7 +1084,7 @@ button {
     50% {
         transform: scale(1.4);
         filter: brightness(2);
-        box-shadow: 0 0 15px var(--brand-rose);
+        box-shadow: 0 0 15px var(--brand-white);
     }
 
     100% {
@@ -1025,12 +1095,59 @@ button {
 
 .tag:hover {
     color: var(--text-main);
-    border-color: var(--brand-crimson);
-    background: rgba(255, 59, 92, 0.1);
+    border-color: var(--brand-white);
+    background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 4px 12px rgba(255, 59, 92, 0.2);
+    box-shadow: 
+        0 4px 15px rgba(255, 255, 255, 0.1),
+        0 0 15px var(--chromatic-2),
+        -5px 0 12px rgba(255, 0, 234, 0.4),
+        5px 0 12px rgba(0, 240, 255, 0.4);
 }
 
 .tag:active {
     transform: scale(0.95);
+}
+
+/* Format Selector Styles */
+.format-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.format-toggle {
+    display: flex;
+    background: var(--bg-input);
+    padding: 2px;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+}
+
+.btn-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.btn-toggle:hover {
+    color: var(--text-main);
+}
+
+.btn-toggle.active {
+    background: var(--chromatic-gradient);
+    color: white;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.format-header-actions .btn-ghost {
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
