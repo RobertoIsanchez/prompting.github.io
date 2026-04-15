@@ -34,7 +34,21 @@
         <header class="header glass-panel">
             <div class="header-brand">
                 <div class="header-robot">
-                    <video src="logo.webm" autoplay loop muted playsinline class="robot-icon"></video>
+                    <video id="logoVideo" autoplay loop muted playsinline class="robot-icon">
+                        <source id="logoSource" src="logo.webm" type="video/webm">
+                    </video>
+                    <script>
+                        (function() {
+                            var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                            var video = document.getElementById('logoVideo');
+                            var source = document.getElementById('logoSource');
+                            if (isSafari) {
+                                source.src = 'logo.mov';
+                                source.type = 'video/quicktime';
+                            }
+                            video.load();
+                        })();
+                    </script>
                     <canvas id="matrixCanvas" class="robot-matrix"></canvas>
                 </div>
                 <div>
