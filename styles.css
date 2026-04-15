@@ -1,20 +1,20 @@
-/* CSS Variables - OLED Premium Palette */
+/* CSS Variables - Blue/Pink/Gray Premium Palette */
 :root {
-    --bg-base: #020202;
-    --bg-panel: rgba(20, 20, 25, 0.6);
-    --bg-panel-hover: rgba(30, 30, 35, 0.8);
+    --bg-base: #0a0a0a;
+    --bg-panel: rgba(20, 20, 28, 0.75);
+    --bg-panel-hover: rgba(30, 30, 42, 0.85);
     --bg-input: rgba(0, 0, 0, 0.5);
 
     --brand-silver: #e2e8f0;
     --brand-chrome: #ffffff;
     --brand-gray: #94a3b8;
     --brand-white: #ffffff;
-    --brand-cyan: #00f0ff; /* Keeping cyan for some highlights */
+    --brand-cyan: #7dd3fc; /* Soft sky blue */
 
-    --chromatic-1: #a5ebe8; /* Electric Blue */
-    --chromatic-2: #ca8ded; /* Tech Purple */
-    --chromatic-3: #ec4899; /* Neon Pink */
-    --chromatic-4: #f97316; /* Bright Orange */
+    --chromatic-1: #7dd3fc; /* Sky Blue */
+    --chromatic-2: #a5b4fc; /* Soft Indigo */
+    --chromatic-3: #f9a8d4; /* Soft Pink */
+    --chromatic-4: #ec4899; /* Vibrant Pink */
 
     --chromatic-gradient: linear-gradient(135deg, var(--chromatic-1), var(--chromatic-2), var(--chromatic-3), var(--chromatic-4));
 
@@ -27,7 +27,7 @@
     --border-focus: rgba(255, 255, 255, 0.5);
 
     --glow-silver: rgba(255, 255, 255, 0.15);
-    --glow-chromatic: rgba(0, 240, 255, 0.3);
+    --glow-chromatic: rgba(125, 211, 252, 0.3);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -85,22 +85,54 @@ body::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #020202; /* Pure OLED Black */
+    background: #0a0a0a;
+    z-index: -3;
+}
+
+/* Background watermark image */
+body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    max-width: 100%;
+    height: 60vh;
+    max-height: 100%;
+    background-image: url('we_b.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.04;
     z-index: -2;
+    pointer-events: none;
 }
 
 .glow-orb {
     position: fixed;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.12;
+    opacity: 0.15;
     z-index: -1;
     mix-blend-mode: screen;
     animation: mesh-float 25s infinite alternate ease-in-out;
 }
 
-.orb-1, .orb-2 {
-    display: none; /* Removing background orbs to keep it pure black */
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    background: linear-gradient(135deg, #7dd3fc, #a5b4fc);
+    top: -10%;
+    left: -10%;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, #f9a8d4, #ec4899);
+    bottom: -10%;
+    right: -10%;
 }
 
 @keyframes mesh-float {
@@ -284,7 +316,7 @@ body::before {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.3));
+    filter: drop-shadow(0 0 12px rgba(125, 211, 252, 0.3));
     font-weight: 800;
     text-transform: uppercase;
 }
@@ -303,7 +335,7 @@ body::before {
 .icon-gradient svg, 
 .btn-primary i svg {
     stroke: url(#brandGrad) !important;
-    filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
+    filter: drop-shadow(0 0 5px rgba(125, 211, 252, 0.4));
     transition: var(--transition);
 }
 
@@ -344,7 +376,7 @@ button {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     position: relative;
-    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+    box-shadow: 0 4px 20px rgba(125, 211, 252, 0.15);
     transition: var(--transition);
     display: inline-flex;
     align-items: center;
@@ -369,7 +401,7 @@ button {
 .btn-primary:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 
-        0 10px 30px rgba(168, 85, 247, 0.3),
+        0 10px 30px rgba(125, 211, 252, 0.3),
         0 0 15px var(--chromatic-2);
     background: var(--chromatic-gradient) border-box;
 }
@@ -418,7 +450,7 @@ button {
     background: linear-gradient(var(--bg-base), var(--bg-base)) padding-box,
                 var(--chromatic-gradient) border-box;
     border: 1px solid transparent;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+    box-shadow: 0 0 20px rgba(125, 211, 252, 0.2);
     transform: translateY(-2px);
 }
 
@@ -459,7 +491,7 @@ button {
     height: 18px;
     pointer-events: none;
     stroke: url(#brandGrad) !important;
-    filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.4));
+    filter: drop-shadow(0 0 5px rgba(125, 211, 252, 0.4));
 }
 
 .template-select {
@@ -995,8 +1027,8 @@ button {
     box-shadow: 
         0 4px 15px rgba(255, 255, 255, 0.1),
         0 0 15px var(--chromatic-2),
-        -5px 0 12px rgba(255, 0, 234, 0.4),
-        5px 0 12px rgba(0, 240, 255, 0.4);
+        -5px 0 12px rgba(249, 168, 212, 0.4),
+        5px 0 12px rgba(125, 211, 252, 0.4);
 }
 
 .tag:active {
@@ -1159,7 +1191,7 @@ button {
 .btn-toggle.active {
     background: var(--chromatic-gradient);
     color: white;
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    box-shadow: 0 0 10px rgba(125, 211, 252, 0.3);
 }
 
 .format-header-actions .btn-ghost {
@@ -1167,4 +1199,35 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Site Footer */
+.site-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 24px 48px;
+    margin-top: 32px;
+}
+
+.footer-logo {
+    width: 180px;
+    height: auto;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+.footer-logo:hover {
+    opacity: 1;
+}
+
+@media (max-width: 600px) {
+    .footer-logo {
+        width: 140px;
+    }
+    
+    .site-footer {
+        padding: 24px 16px 40px;
+    }
 }
