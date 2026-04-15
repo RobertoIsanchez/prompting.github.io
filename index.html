@@ -38,8 +38,8 @@
                     <canvas id="matrixCanvas" class="robot-matrix"></canvas>
                 </div>
                 <div>
-                    <h1 class="header-title">PROMPT CREATOR</h1>
-                    <p class="header-subtitle">JSON || TOON format</p>
+                    <h1 class="header-title">JSON Prompts</h1>
+                    <p class="header-subtitle">Creator</p>
                 </div>
             </div>
 
@@ -112,20 +112,6 @@
 
             <!-- Left Column: Editor -->
             <section class="editor-section">
-                <!-- Final Prompt Bar -->
-                <div class="glass-panel output-panel" style="animation-delay: 0.1s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i data-lucide="terminal-square" class="icon-gradient"></i> Output Prompt
-                        </div>
-                        <button onclick="copyCleanPrompt()" class="btn-primary btn-sm">
-                            <i data-lucide="copy" class="icon-gradient"></i> <span>Copiar</span>
-                        </button>
-                    </div>
-                    <div class="prompt-text-container">
-                        <p id="textPreview" class="output-text"></p>
-                    </div>
-                </div>
 
                 <!-- Dynamic Fields Studio -->
                 <div class="glass-panel studio-panel" style="animation-delay: 0.2s;">
@@ -133,73 +119,14 @@
                         <div class="panel-title">
                             <i data-lucide="sliders-horizontal" class="icon-gradient"></i> Atributos Base
                         </div>
-                        <button onclick="addField()" class="btn-primary btn-sm">
-                            <i data-lucide="plus" class="icon-gradient"></i> <span>Añadir</span>
-                        </button>
-                    </div>
-                    <div id="fieldsContainer" class="fields-container"></div>
-                </div>
-
-                <!-- Negative Prompt -->
-                <div class="glass-panel negative-panel" style="animation-delay: 0.3s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i data-lucide="octagon-alert" class="icon-gradient"></i> Negative Prompt
-                        </div>
-                    </div>
-                    <input type="text" id="negativePrompt" oninput="updateJSON()"
-                        value="low quality, blurry, distorted, low resolution, watermark, text"
-                        class="input-field input-negative">
-                </div>
-
-                <!-- Editor Action Buttons -->
-                <div class="action-bar">
-                    <button onclick="downloadJSON()" class="btn-primary btn-lg w-full">
-                        <i data-lucide="save" class="icon-gradient"></i> <span>Exportar Configuración (JSON)</span>
-                    </button>
-                </div>
-
-                <!-- Import Section Overlay -->
-                <div id="importSection" class="glass-panel import-overlay">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i data-lucide="file-json"></i> Importar JSON
-                        </div>
-                        <button onclick="switchTab('editor')" class="btn-ghost btn-sm btn-icon">
-                            <i data-lucide="x" class="icon-gradient"></i>
-                        </button>
-                    </div>
-                    <textarea id="importArea" class="input-field textarea-code"
-                        placeholder="Pega tu JSON aquí..."></textarea>
-                    <button onclick="importJSON()" class="btn-primary w-full mt-4">
-                        <i data-lucide="check-circle" class="icon-gradient"></i> <span>Procesar y Cargar</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Right Column: System Output & Library -->
-            <section class="sidebar-section">
-
-                <!-- JSON Live Preview -->
-                <div class="glass-panel json-panel" style="animation-delay: 0.4s;">
-                    <div class="panel-header">
-                        <div class="panel-title">
-                            <i data-lucide="braces" class="icon-gradient"></i> System Data
-                        </div>
-                        <div class="format-header-actions">
-                            <div class="format-toggle">
-                                <button id="jsonBtn" onclick="setFormat('json')" class="btn-toggle active">JSON</button>
-                                <button id="toonBtn" onclick="setFormat('toon')" class="btn-toggle">TOON</button>
-                            </div>
-                            <button onclick="copyToClipboard()" class="btn-ghost btn-sm btn-icon" title="Copiar al portapapeles">
-                                <i data-lucide="copy" class="icon-gradient"></i>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="newFieldKey" placeholder="Nombre del campo" class="input-field" style="width: 140px; padding: 4px 8px; font-size: 0.85rem; border-radius: var(--radius-sm);" onkeypress="if(event.key === 'Enter') addNewFieldFromInput()">
+                            <button onclick="addNewFieldFromInput()" class="btn-primary btn-sm">
+                                <i data-lucide="plus" class="icon-gradient"></i> <span>Añadir</span>
                             </button>
                         </div>
                     </div>
-                    <div class="json-container">
-                        <textarea id="jsonPreview" class="textarea-code text-rose-glow"
-                            oninput="syncFromJSON()"></textarea>
-                    </div>
+                    <div id="fieldsContainer" class="fields-container"></div>
                 </div>
 
                 <!-- Library Bento Box -->
@@ -228,31 +155,22 @@
                                 <span class="tag" title="Contrapicado" data-val="Low Angle">Low Angle</span>
                                 <span class="tag" title="Picado" data-val="High Angle">High Angle</span>
                                 <span class="tag" title="Cenital extrema" data-val="Bird's Eye">Bird's Eye</span>
-                                <span class="tag" title="Plano holandés/inclinado" data-val="Dutch Angle">Dutch
-                                    Angle</span>
+                                <span class="tag" title="Plano holandés/inclinado" data-val="Dutch Angle">Dutch Angle</span>
                                 <span class="tag" title="Primer plano" data-val="Close-up">Close-up</span>
-                                <span class="tag" title="Detalle macro" data-val="Extreme Close-up">Extreme
-                                    Close-up</span>
-                                <span class="tag" title="Desde el suelo hacia arriba" data-val="Worm's Eye view">Worm's
-                                    Eye view</span>
-                                <span class="tag" title="Sobre el hombro"
-                                    data-val="Over-the-shoulder">Over-the-shoulder</span>
-                                <span class="tag" title="Subjetivo" data-val="Point of View (POV)">Point of View
-                                    (POV)</span>
+                                <span class="tag" title="Detalle macro" data-val="Extreme Close-up">Extreme Close-up</span>
+                                <span class="tag" title="Desde el suelo hacia arriba" data-val="Worm's Eye view">Worm's Eye view</span>
+                                <span class="tag" title="Sobre el hombro" data-val="Over-the-shoulder">Over-the-shoulder</span>
+                                <span class="tag" title="Subjetivo" data-val="Point of View (POV)">Point of View (POV)</span>
                                 <span class="tag" title="Plano general" data-val="Wide Shot">Wide Shot</span>
-                                <span class="tag" title="Gran plano general" data-val="Extreme Wide Shot">Extreme Wide
-                                    Shot</span>
+                                <span class="tag" title="Gran plano general" data-val="Extreme Wide Shot">Extreme Wide Shot</span>
                                 <span class="tag" title="Plano medio" data-val="Medium Shot">Medium Shot</span>
                                 <span class="tag" title="Plano entero" data-val="Full Body Shot">Full Body Shot</span>
                                 <span class="tag" title="Vista aérea con dron" data-val="Aerial View">Aerial View</span>
-                                <span class="tag" title="Cámara a ras de suelo" data-val="Ground Level">Ground
-                                    Level</span>
+                                <span class="tag" title="Cámara a ras de suelo" data-val="Ground Level">Ground Level</span>
                                 <span class="tag" title="Perfil lateral" data-val="Side Profile">Side Profile</span>
-                                <span class="tag" title="Encuadre de clave baja" data-val="Low-key Shot">Low-key
-                                    Shot</span>
+                                <span class="tag" title="Encuadre de clave baja" data-val="Low-key Shot">Low-key Shot</span>
                                 <span class="tag" title="Barrido lateral" data-val="Pan Shot">Pan Shot</span>
-                                <span class="tag" title="Marco inclinado dinámico" data-val="Tilted Frame">Tilted
-                                    Frame</span>
+                                <span class="tag" title="Marco inclinado dinámico" data-val="Tilted Frame">Tilted Frame</span>
                             </div>
                         </div>
 
@@ -269,31 +187,20 @@
                                 <span class="tag" title="Detalle microscópico" data-val="Macro">Macro</span>
                                 <span class="tag" title="Fondo desenfocado" data-val="Bokeh">Bokeh</span>
                                 <span class="tag" title="Ojo de pez" data-val="Fisheye Lens">Fisheye Lens</span>
-                                <span class="tag" title="Estilo cine panorámico" data-val="Anamorphic Lens">Anamorphic
-                                    Lens</span>
-                                <span class="tag" title="Súper gran angular" data-val="Wide Angle 14mm">Wide Angle
-                                    14mm</span>
-                                <span class="tag" title="Compresión de fondo" data-val="Telephoto 200mm">Telephoto
-                                    200mm</span>
+                                <span class="tag" title="Estilo cine panorámico" data-val="Anamorphic Lens">Anamorphic Lens</span>
+                                <span class="tag" title="Súper gran angular" data-val="Wide Angle 14mm">Wide Angle 14mm</span>
+                                <span class="tag" title="Compresión de fondo" data-val="Telephoto 200mm">Telephoto 200mm</span>
                                 <span class="tag" title="Efecto miniatura" data-val="Tilt-shift">Tilt-shift</span>
                                 <span class="tag" title="Destello de lente" data-val="Lens Flare">Lens Flare</span>
-                                <span class="tag" title="Desfase de color en bordes"
-                                    data-val="Chromatic Aberration">Chromatic Aberration</span>
+                                <span class="tag" title="Desfase de color en bordes" data-val="Chromatic Aberration">Chromatic Aberration</span>
                                 <span class="tag" title="Enfoque suave/difuso" data-val="Soft Focus">Soft Focus</span>
-                                <span class="tag" title="Todo enfocado, fondo y frente" data-val="Deep Focus">Deep
-                                    Focus</span>
-                                <span class="tag" title="Lente antigua/retro" data-val="Vintage Lens">Vintage
-                                    Lens</span>
-                                <span class="tag" title="Filtro polarizado/colores vivos"
-                                    data-val="Polarized Filter">Polarized Filter</span>
-                                <span class="tag" title="Fotografía infrarroja" data-val="Infrared Photography">Infrared
-                                    Photography</span>
-                                <span class="tag" title="Desenfoque de movimiento" data-val="Motion Blur">Motion
-                                    Blur</span>
-                                <span class="tag" title="Dos puntos de enfoque distintos" data-val="Split Diopter">Split
-                                    Diopter</span>
-                                <span class="tag" title="Doble exposición" data-val="Double Exposure">Double
-                                    Exposure</span>
+                                <span class="tag" title="Todo enfocado, fondo y frente" data-val="Deep Focus">Deep Focus</span>
+                                <span class="tag" title="Lente antigua/retro" data-val="Vintage Lens">Vintage Lens</span>
+                                <span class="tag" title="Filtro polarizado/colores vivos" data-val="Polarized Filter">Polarized Filter</span>
+                                <span class="tag" title="Fotografía infrarroja" data-val="Infrared Photography">Infrared Photography</span>
+                                <span class="tag" title="Desenfoque de movimiento" data-val="Motion Blur">Motion Blur</span>
+                                <span class="tag" title="Dos puntos de enfoque distintos" data-val="Split Diopter">Split Diopter</span>
+                                <span class="tag" title="Doble exposición" data-val="Double Exposure">Double Exposure</span>
                             </div>
                         </div>
 
@@ -304,39 +211,26 @@
                                 <span>Luz</span>
                             </div>
                             <div class="bento-tags">
-                                <span class="tag" title="Luz cálida de atardecer" data-val="Golden Hour">Golden
-                                    Hour</span>
-                                <span class="tag" title="Luz clásica de retrato con triángulo en mejilla"
-                                    data-val="Rembrandt">Rembrandt</span>
-                                <span class="tag" title="Rayos de luz visibles/humo"
-                                    data-val="Volumetric">Volumetric</span>
-                                <span class="tag" title="Iluminación de película de alto presupuesto"
-                                    data-val="Cinematic">Cinematic</span>
+                                <span class="tag" title="Luz cálida de atardecer" data-val="Golden Hour">Golden Hour</span>
+                                <span class="tag" title="Luz clásica de retrato con triángulo en mejilla" data-val="Rembrandt">Rembrandt</span>
+                                <span class="tag" title="Rayos de luz visibles/humo" data-val="Volumetric">Volumetric</span>
+                                <span class="tag" title="Iluminación de película de alto presupuesto" data-val="Cinematic">Cinematic</span>
                                 <span class="tag" title="Luz de contorno" data-val="Rim Lighting">Rim Lighting</span>
-                                <span class="tag" title="Neones neón/magenta y cian"
-                                    data-val="Cyberpunk">Cyberpunk</span>
+                                <span class="tag" title="Neones neón/magenta y cian" data-val="Cyberpunk">Cyberpunk</span>
                                 <span class="tag" title="Mucha luz, pocas sombras" data-val="High-key">High-key</span>
-                                <span class="tag" title="Sombras dramáticas, mucha oscuridad"
-                                    data-val="Low-key">Low-key</span>
+                                <span class="tag" title="Sombras dramáticas, mucha oscuridad" data-val="Low-key">Low-key</span>
                                 <span class="tag" title="Rayos de sol filtrados" data-val="God Rays">God Rays</span>
-                                <span class="tag" title="Luz de estudio suave" data-val="Softbox Lighting">Softbox
-                                    Lighting</span>
+                                <span class="tag" title="Luz de estudio suave" data-val="Softbox Lighting">Softbox Lighting</span>
                                 <span class="tag" title="Brillo fluorescente" data-val="Neon Glow">Neon Glow</span>
                                 <span class="tag" title="Luz de vela/íntima" data-val="Candlelight">Candlelight</span>
                                 <span class="tag" title="Luz de luna fría" data-val="Moonlight">Moonlight</span>
-                                <span class="tag" title="Luz orgánica que brilla"
-                                    data-val="Bioluminescent">Bioluminescent</span>
-                                <span class="tag" title="Luz de flash estroboscópico" data-val="Strobe Light">Strobe
-                                    Light</span>
-                                <span class="tag" title="Luz de mediodía, sombras duras" data-val="Harsh Sunlight">Harsh
-                                    Sunlight</span>
+                                <span class="tag" title="Luz orgánica que brilla" data-val="Bioluminescent">Bioluminescent</span>
+                                <span class="tag" title="Luz de flash estroboscópico" data-val="Strobe Light">Strobe Light</span>
+                                <span class="tag" title="Luz de mediodía, sombras duras" data-val="Harsh Sunlight">Harsh Sunlight</span>
                                 <span class="tag" title="Contraluz total/silueta" data-val="Backlit">Backlit</span>
-                                <span class="tag" title="Luz ambiental/emocional" data-val="Mood Lighting">Mood
-                                    Lighting</span>
-                                <span class="tag" title="Luz filtrada por hojas/árboles"
-                                    data-val="Dappled Light">Dappled Light</span>
-                                <span class="tag" title="Iluminación de estudio profesional"
-                                    data-val="Studio Portrait Lighting">Studio Portrait Lighting</span>
+                                <span class="tag" title="Luz ambiental/emocional" data-val="Mood Lighting">Mood Lighting</span>
+                                <span class="tag" title="Luz filtrada por hojas/árboles" data-val="Dappled Light">Dappled Light</span>
+                                <span class="tag" title="Iluminación de estudio profesional" data-val="Studio Portrait Lighting">Studio Portrait Lighting</span>
                             </div>
                         </div>
 
@@ -347,41 +241,26 @@
                                 <span>Composición</span>
                             </div>
                             <div class="bento-tags">
-                                <span class="tag" title="Regla de tercios" data-val="Rule of Thirds">Rule of
-                                    Thirds</span>
+                                <span class="tag" title="Regla de tercios" data-val="Rule of Thirds">Rule of Thirds</span>
                                 <span class="tag" title="Simetría perfecta" data-val="Symmetry">Symmetry</span>
                                 <span class="tag" title="Líneas de fuga" data-val="Leading Lines">Leading Lines</span>
-                                <span class="tag" title="Espacio vacío minimalista" data-val="Negative Space">Negative
-                                    Space</span>
-                                <span class="tag" title="Vista desde arriba, objetos ordenados" data-val="Flat Lay">Flat
-                                    Lay</span>
+                                <span class="tag" title="Espacio vacío minimalista" data-val="Negative Space">Negative Space</span>
+                                <span class="tag" title="Vista desde arriba, objetos ordenados" data-val="Flat Lay">Flat Lay</span>
                                 <span class="tag" title="Proporción áurea" data-val="Golden Ratio">Golden Ratio</span>
                                 <span class="tag" title="Marco dentro de un marco" data-val="Framing">Framing</span>
                                 <span class="tag" title="Sujeto en el centro exacto" data-val="Centred">Centred</span>
-                                <span class="tag" title="Líneas diagonales dinámicas" data-val="Diagonal Lines">Diagonal
-                                    Lines</span>
-                                <span class="tag" title="Elemento clave al frente"
-                                    data-val="Foreground Interest">Foreground Interest</span>
-                                <span class="tag" title="Composición limpia"
-                                    data-val="Minimalist Composition">Minimalist Composition</span>
-                                <span class="tag" title="Elementos en grupos impares" data-val="Rule of Odds">Rule of
-                                    Odds</span>
-                                <span class="tag" title="Patrones geométricos" data-val="Geometric Patterns">Geometric
-                                    Patterns</span>
-                                <span class="tag" title="Punto de fuga al infinito" data-val="Vanishing Point">Vanishing
-                                    Point</span>
-                                <span class="tag" title="Escena densa/caótica" data-val="Crowded Scene">Crowded
-                                    Scene</span>
-                                <span class="tag" title="Distribución tipo mapa" data-val="Bird's Eye Layout">Bird's Eye
-                                    Layout</span>
-                                <span class="tag" title="Elementos superpuestos"
-                                    data-val="Overlapping elements">Overlapping elements</span>
-                                <span class="tag" title="Equilibrio triangular" data-val="Triadic Balance">Triadic
-                                    Balance</span>
-                                <span class="tag" title="Cenital de producto" data-val="Top-down view">Top-down
-                                    view</span>
-                                <span class="tag" title="Composición en espiral" data-val="Spiral Composition">Spiral
-                                    Composition</span>
+                                <span class="tag" title="Líneas diagonales dinámicas" data-val="Diagonal Lines">Diagonal Lines</span>
+                                <span class="tag" title="Elemento clave al frente" data-val="Foreground Interest">Foreground Interest</span>
+                                <span class="tag" title="Composición limpia" data-val="Minimalist Composition">Minimalist Composition</span>
+                                <span class="tag" title="Elementos en grupos impares" data-val="Rule of Odds">Rule of Odds</span>
+                                <span class="tag" title="Patrones geométricos" data-val="Geometric Patterns">Geometric Patterns</span>
+                                <span class="tag" title="Punto de fuga al infinito" data-val="Vanishing Point">Vanishing Point</span>
+                                <span class="tag" title="Escena densa/caótica" data-val="Crowded Scene">Crowded Scene</span>
+                                <span class="tag" title="Distribución tipo mapa" data-val="Bird's Eye Layout">Bird's Eye Layout</span>
+                                <span class="tag" title="Elementos superpuestos" data-val="Overlapping elements">Overlapping elements</span>
+                                <span class="tag" title="Equilibrio triangular" data-val="Triadic Balance">Triadic Balance</span>
+                                <span class="tag" title="Cenital de producto" data-val="Top-down view">Top-down view</span>
+                                <span class="tag" title="Composición en espiral" data-val="Spiral Composition">Spiral Composition</span>
                             </div>
                         </div>
 
@@ -393,39 +272,25 @@
                             </div>
                             <div class="bento-tags">
                                 <span class="tag" title="Moda/Revista de lujo" data-val="Editorial">Editorial</span>
-                                <span class="tag" title="Grano de película antigua" data-val="Analog Film">Analog
-                                    Film</span>
-                                <span class="tag" title="Cine negro, blanco y negro dramático"
-                                    data-val="Noir">Noir</span>
+                                <span class="tag" title="Grano de película antigua" data-val="Analog Film">Analog Film</span>
+                                <span class="tag" title="Cine negro, blanco y negro dramático" data-val="Noir">Noir</span>
                                 <span class="tag" title="Grabado japonés tradicional" data-val="Ukiyo-e">Ukiyo-e</span>
-                                <span class="tag" title="Estilo renderizado de animación moderna" data-val="3D Pixar">3D
-                                    Pixar</span>
-                                <span class="tag" title="Estilo biónico/futurista"
-                                    data-val="Cybernetic">Cybernetic</span>
+                                <span class="tag" title="Estilo renderizado de animación moderna" data-val="3D Pixar">3D Pixar</span>
+                                <span class="tag" title="Estilo biónico/futurista" data-val="Cybernetic">Cybernetic</span>
                                 <span class="tag" title="Estilo oscuro/victoriano" data-val="Gothic">Gothic</span>
-                                <span class="tag" title="Estética años 80, retro-futurista"
-                                    data-val="Vaporwave">Vaporwave</span>
+                                <span class="tag" title="Estética años 80, retro-futurista" data-val="Vaporwave">Vaporwave</span>
                                 <span class="tag" title="Estilo Dalí, onírico" data-val="Surrealism">Surrealism</span>
-                                <span class="tag" title="Estilo pinceladas tipo Monet"
-                                    data-val="Impressionism">Impressionism</span>
-                                <span class="tag" title="Fotorrealismo extremo"
-                                    data-val="Hyper-realistic">Hyper-realistic</span>
-                                <span class="tag" title="Estética de cuadrículas y neones"
-                                    data-val="Synthwave">Synthwave</span>
-                                <span class="tag" title="Pintura al óleo clásica" data-val="Oil Painting">Oil
-                                    Painting</span>
-                                <span class="tag" title="Estética de vapor y engranajes"
-                                    data-val="Steampunk">Steampunk</span>
+                                <span class="tag" title="Estilo pinceladas tipo Monet" data-val="Impressionism">Impressionism</span>
+                                <span class="tag" title="Fotorrealismo extremo" data-val="Hyper-realistic">Hyper-realistic</span>
+                                <span class="tag" title="Estética de cuadrículas y neones" data-val="Synthwave">Synthwave</span>
+                                <span class="tag" title="Pintura al óleo clásica" data-val="Oil Painting">Oil Painting</span>
+                                <span class="tag" title="Estética de vapor y engranajes" data-val="Steampunk">Steampunk</span>
                                 <span class="tag" title="Acuarela suave" data-val="Watercolor">Watercolor</span>
-                                <span class="tag" title="Boceto a lápiz" data-val="Sketch / Pencil Drawing">Sketch /
-                                    Pencil Drawing</span>
+                                <span class="tag" title="Boceto a lápiz" data-val="Sketch / Pencil Drawing">Sketch / Pencil Drawing</span>
                                 <span class="tag" title="Estilo Andy Warhol/Cómic" data-val="Pop Art">Pop Art</span>
-                                <span class="tag" title="Estilo figuras de plastilina"
-                                    data-val="Claymation">Claymation</span>
-                                <span class="tag" title="Efecto de error digital" data-val="Glitch Art">Glitch
-                                    Art</span>
-                                <span class="tag" title="Ilustración plana/limpia"
-                                    data-val="Minimalist Vector">Minimalist Vector</span>
+                                <span class="tag" title="Estilo figuras de plastilina" data-val="Claymation">Claymation</span>
+                                <span class="tag" title="Efecto de error digital" data-val="Glitch Art">Glitch Art</span>
+                                <span class="tag" title="Ilustración plana/limpia" data-val="Minimalist Vector">Minimalist Vector</span>
                             </div>
                         </div>
 
@@ -436,46 +301,26 @@
                                 <span>UI / Diseño</span>
                             </div>
                             <div class="bento-tags">
-                                <span class="tag" title="Efecto de vidrio translúcido"
-                                    data-val="Glassmorphism">Glassmorphism</span>
-                                <span class="tag" title="Sombras suaves, look extruido"
-                                    data-val="Neumorphism">Neumorphism</span>
-                                <span class="tag" title="Cuadrícula organizada tipo Apple" data-val="Bento Box">Bento
-                                    Box</span>
-                                <span class="tag" title="Diseño crudo, tipografía gigante"
-                                    data-val="Brutalist">Brutalist</span>
-                                <span class="tag" title="Look 3D suave de plastilina"
-                                    data-val="Claymorphism">Claymorphism</span>
-                                <span class="tag" title="Fondos con degradados tipo aurora"
-                                    data-val="Auroramorphism">Auroramorphism</span>
-                                <span class="tag" title="Interfaz de tonos oscuros" data-val="Dark Mode UI">Dark Mode
-                                    UI</span>
-                                <span class="tag" title="Diseño plano con sutiles sombras"
-                                    data-val="Flat Design 2.0">Flat Design 2.0</span>
-                                <span class="tag" title="Colores iridiscentes/futuristas"
-                                    data-val="Holographic Design">Holographic Design</span>
-                                <span class="tag" title="Imitación de materiales reales: cuero, metal"
-                                    data-val="Skeuomorphism">Skeuomorphism</span>
-                                <span class="tag" title="Interfaces tipo Fallout/años 60"
-                                    data-val="Retrofuturism UI">Retrofuturism UI</span>
-                                <span class="tag" title="Máxima limpieza, mucho blanco"
-                                    data-val="Minimalist UI">Minimalist UI</span>
-                                <span class="tag" title="Uso de solo dos colores contrastantes"
-                                    data-val="Duo-tone">Duo-tone</span>
-                                <span class="tag" title="Diseño basado en tarjetas/Pinterest"
-                                    data-val="Cards Layout">Cards Layout</span>
-                                <span class="tag" title="Formas fluidas y naturales" data-val="Organic Shapes">Organic
-                                    Shapes</span>
-                                <span class="tag" title="Cuadrículas tecnológicas" data-val="Cyber Grid">Cyber
-                                    Grid</span>
-                                <span class="tag" title="Elementos con sombras de profundidad"
-                                    data-val="Floating Elements">Floating Elements</span>
-                                <span class="tag" title="Estética de videojuegos antiguos" data-val="Pixel Art UI">Pixel
-                                    Art UI</span>
-                                <span class="tag" title="Todo en variaciones de un solo color"
-                                    data-val="Monochromatic Design">Monochromatic Design</span>
-                                <span class="tag" title="Vista 3D técnica/diagramas"
-                                    data-val="Isometric Design">Isometric Design</span>
+                                <span class="tag" title="Efecto de vidrio translúcido" data-val="Glassmorphism">Glassmorphism</span>
+                                <span class="tag" title="Sombras suaves, look extruido" data-val="Neumorphism">Neumorphism</span>
+                                <span class="tag" title="Cuadrícula organizada tipo Apple" data-val="Bento Box">Bento Box</span>
+                                <span class="tag" title="Diseño crudo, tipografía gigante" data-val="Brutalist">Brutalist</span>
+                                <span class="tag" title="Look 3D suave de plastilina" data-val="Claymorphism">Claymorphism</span>
+                                <span class="tag" title="Fondos con degradados tipo aurora" data-val="Auroramorphism">Auroramorphism</span>
+                                <span class="tag" title="Interfaz de tonos oscuros" data-val="Dark Mode UI">Dark Mode UI</span>
+                                <span class="tag" title="Diseño plano con sutiles sombras" data-val="Flat Design 2.0">Flat Design 2.0</span>
+                                <span class="tag" title="Colores iridiscentes/futuristas" data-val="Holographic Design">Holographic Design</span>
+                                <span class="tag" title="Imitación de materiales reales: cuero, metal" data-val="Skeuomorphism">Skeuomorphism</span>
+                                <span class="tag" title="Interfaces tipo Fallout/años 60" data-val="Retrofuturism UI">Retrofuturism UI</span>
+                                <span class="tag" title="Máxima limpieza, mucho blanco" data-val="Minimalist UI">Minimalist UI</span>
+                                <span class="tag" title="Uso de solo dos colores contrastantes" data-val="Duo-tone">Duo-tone</span>
+                                <span class="tag" title="Diseño basado en tarjetas/Pinterest" data-val="Cards Layout">Cards Layout</span>
+                                <span class="tag" title="Formas fluidas y naturales" data-val="Organic Shapes">Organic Shapes</span>
+                                <span class="tag" title="Cuadrículas tecnológicas" data-val="Cyber Grid">Cyber Grid</span>
+                                <span class="tag" title="Elementos con sombras de profundidad" data-val="Floating Elements">Floating Elements</span>
+                                <span class="tag" title="Estética de videojuegos antiguos" data-val="Pixel Art UI">Pixel Art UI</span>
+                                <span class="tag" title="Todo en variaciones de un solo color" data-val="Monochromatic Design">Monochromatic Design</span>
+                                <span class="tag" title="Vista 3D técnica/diagramas" data-val="Isometric Design">Isometric Design</span>
                             </div>
                         </div>
 
@@ -498,6 +343,83 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Right Column: System Output & Context -->
+            <section class="sidebar-section">
+
+                <!-- Negative Prompt -->
+                <div class="glass-panel negative-panel" style="animation-delay: 0.3s;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="octagon-alert" class="icon-gradient"></i> Negative Prompt
+                        </div>
+                    </div>
+                    <input type="text" id="negativePrompt" oninput="updateJSON()"
+                        value="low quality, blurry, distorted, low resolution, watermark, text"
+                        class="input-field input-negative">
+                </div>
+
+                <!-- Final Prompt Bar -->
+                <div class="glass-panel output-panel" style="animation-delay: 0.1s;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="terminal-square" class="icon-gradient"></i> Output Prompt
+                        </div>
+                        <button onclick="copyCleanPrompt()" class="btn-primary btn-sm">
+                            <i data-lucide="copy" class="icon-gradient"></i> <span>Copiar</span>
+                        </button>
+                    </div>
+                    <div class="prompt-text-container">
+                        <p id="textPreview" class="output-text"></p>
+                    </div>
+                </div>
+
+                <!-- JSON Live Preview -->
+                <div class="glass-panel json-panel" style="animation-delay: 0.4s;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="braces" class="icon-gradient"></i> System Data
+                        </div>
+                        <div class="format-header-actions">
+                            <div class="format-toggle">
+                                <button id="jsonBtn" onclick="setFormat('json')" class="btn-toggle active">JSON</button>
+                                <button id="toonBtn" onclick="setFormat('toon')" class="btn-toggle">TOON</button>
+                            </div>
+                            <button onclick="copyToClipboard()" class="btn-ghost btn-sm btn-icon" title="Copiar al portapapeles">
+                                <i data-lucide="copy" class="icon-gradient"></i>
+                            </button>
+                            <button onclick="downloadJSON()" class="btn-ghost btn-sm btn-icon" title="Exportar Configuración (JSON)">
+                                <i data-lucide="save" class="icon-gradient"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="json-container">
+                        <textarea id="jsonPreview" class="textarea-code text-rose-glow"
+                            oninput="syncFromJSON()"></textarea>
+                    </div>
+                </div>
+
+
+
+                <!-- Import Section Overlay -->
+                <!-- We leave this absolutely positioned as it works for the right side -->
+                <div id="importSection" class="glass-panel import-overlay">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i data-lucide="file-json" class="icon-gradient"></i> Importar JSON
+                        </div>
+                        <button onclick="switchTab('editor')" class="btn-ghost btn-sm btn-icon">
+                            <i data-lucide="x" class="icon-gradient"></i>
+                        </button>
+                    </div>
+                    <textarea id="importArea" class="input-field textarea-code"
+                        placeholder="Pega tu JSON aquí..."></textarea>
+                    <button onclick="importJSON()" class="btn-primary w-full mt-4">
+                        <i data-lucide="check-circle" class="icon-gradient"></i> <span>Procesar y Cargar</span>
+                    </button>
+                </div>
+            </section>
+
         </main>
     </div>
 

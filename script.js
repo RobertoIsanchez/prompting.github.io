@@ -117,6 +117,18 @@ function addField(key = "", value = "", placeholder = "Valor...") {
     // Auto focus if added empty
     if (key === "") {
         setTimeout(() => row.querySelector('.key-input').focus(), 50);
+    } else {
+        setTimeout(() => row.querySelector('.value-input').focus(), 50);
+    }
+}
+
+function addNewFieldFromInput() {
+    const input = document.getElementById('newFieldKey');
+    const key = input ? input.value.trim() : "";
+    addField(key, "");
+    if(input) {
+        input.value = "";
+        input.focus();
     }
 }
 
@@ -207,11 +219,11 @@ function setFormat(format) {
 }
 
 function convertToTOON(obj) {
-    let output = "prompt_structure:\n";
-    const structure = obj.prompt_structure || {};
+    let output = "";
+    const structure = obj.prompt_structure || obj || {};
     for (const [key, val] of Object.entries(structure)) {
         if (key !== 'negative_prompt') {
-            output += `  ${key}: ${val}\n`;
+            output += `${key}: ${val}\n`;
         }
     }
     if (structure.negative_prompt) {
@@ -223,9 +235,7 @@ function convertToTOON(obj) {
 function updateJSON() {
     if (isSyncing) return;
 
-    const result = {
-        prompt_structure: {}
-    };
+    const result = {};
 
     let promptParts = [];
 
@@ -244,7 +254,7 @@ function updateJSON() {
             }
         } catch (e) { }
 
-        result.prompt_structure[k] = v;
+        result[k] = v;
 
         if (v && v.toString().trim() !== "") {
             const clean = typeof v === 'object' ? JSON.stringify(v).replace(/[{} "[\]]/g, '') : v;
@@ -253,7 +263,7 @@ function updateJSON() {
     });
 
     if (negativeInput.value.trim() !== '') {
-        result.prompt_structure.negative_prompt = negativeInput.value;
+        result.negative_prompt = negativeInput.value;
     }
 
     // Format output
